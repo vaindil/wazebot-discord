@@ -38,6 +38,11 @@ namespace WazeBotDiscord
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
 
+            client.Ready += async () =>
+            {
+                await client.SetGameAsync("with junction boxes");
+            };
+
             await Task.Delay(-1);
         }
 
