@@ -64,6 +64,10 @@ namespace WazeBotDiscord
 
             var context = new CommandContext(client, message);
             var result = await commands.ExecuteAsync(context, argPos, map);
+            if (!result.IsSuccess && result.Error == CommandError.UnmetPrecondition)
+            {
+                await context.Channel.SendMessageAsync(result.ErrorReason);
+            }
         }
 
         Task Log(LogMessage msg)
