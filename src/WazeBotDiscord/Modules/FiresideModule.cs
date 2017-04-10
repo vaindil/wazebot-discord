@@ -2,7 +2,6 @@
 using Discord.WebSocket;
 using System.Linq;
 using System.Threading.Tasks;
-using WazeBotDiscord.Utilities;
 
 namespace WazeBotDiscord.Modules
 {
