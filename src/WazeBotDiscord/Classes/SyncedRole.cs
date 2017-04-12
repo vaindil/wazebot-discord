@@ -22,7 +22,7 @@ namespace WazeBotDiscord.Classes
 
         public ulong SetById { get; set; }
 
-        public ulong SetOnServerId { get; set; }
+        public ulong SetInGuildId { get; set; }
 
         public DateTime SetAt { get; set; }
     }
