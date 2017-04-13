@@ -2,8 +2,11 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using WazeBotDiscord.Classes;
+using WazeBotDiscord.Events;
 
 namespace WazeBotDiscord
 {
@@ -12,6 +15,7 @@ namespace WazeBotDiscord
         DiscordSocketClient client;
         CommandService commands;
         DependencyMap map;
+        List<Autoreply> autoreplies;
 
         public static void Main(string[] args)
             => new Program().RunAsync().GetAwaiter().GetResult();
@@ -26,11 +30,14 @@ namespace WazeBotDiscord
 
             var commandsConfig = new CommandServiceConfig
             {
-                CaseSensitiveCommands = false,
+                CaseSensitiveCommands = false
             };
+
+            autoreplies = await AutoreplyHandler.InitAutoreplyAsync();
 
             commands = new CommandService(commandsConfig);
             map = new DependencyMap();
+            map.Add(autoreplies);
             await InstallCommands();
 
             client.Log += Log;
@@ -43,7 +50,14 @@ namespace WazeBotDiscord
                 await client.SetGameAsync("with junction boxes");
             };
 
+            client.MessageReceived += HandleAutoreply;
+
             await Task.Delay(-1);
+        }
+
+        async Task HandleAutoreply(SocketMessage msg)
+        {
+            await AutoreplyHandler.HandleAutoreplyAsync(msg, autoreplies);
         }
 
         public async Task InstallCommands()
