@@ -5,8 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
-using WazeBotDiscord.Classes;
-using WazeBotDiscord.Events;
+using WazeBotDiscord.Autoreplies;
 
 namespace WazeBotDiscord
 {
@@ -15,7 +14,7 @@ namespace WazeBotDiscord
         DiscordSocketClient client;
         CommandService commands;
         DependencyMap map;
-        List<Autoreply> autoreplies;
+        AutoreplyService autoreplyService;
 
         public static void Main(string[] args)
             => new Program().RunAsync().GetAwaiter().GetResult();
@@ -33,11 +32,12 @@ namespace WazeBotDiscord
                 CaseSensitiveCommands = false
             };
 
-            autoreplies = await AutoreplyHandler.InitAutoreplyAsync();
+            autoreplyService = new AutoreplyService();
+            await autoreplyService.InitAutoreplyServiceAsync();
 
             commands = new CommandService(commandsConfig);
             map = new DependencyMap();
-            map.Add(autoreplies);
+            map.Add(autoreplyService);
             await InstallCommands();
 
             client.Log += Log;
@@ -57,7 +57,7 @@ namespace WazeBotDiscord
 
         async Task HandleAutoreply(SocketMessage msg)
         {
-            await AutoreplyHandler.HandleAutoreplyAsync(msg, autoreplies);
+            await AutoreplyHandler.HandleAutoreplyAsync(msg, autoreplyService);
         }
 
         public async Task InstallCommands()

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WazeBotDiscord.Classes
+namespace WazeBotDiscord.Autoreplies
 {
     public class Autoreply
     {

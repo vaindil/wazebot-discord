@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MySQL.Data.Entity.Extensions;
 using System;
+using WazeBotDiscord.Autoreplies;
 using WazeBotDiscord.Classes;
 
 namespace WazeBotDiscord
