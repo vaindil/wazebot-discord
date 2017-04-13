@@ -66,7 +66,7 @@ namespace WazeBotDiscord.Autoreplies
             }
         }
 
-        public async Task DeleteAutoreply(ulong channelId, ulong guildId, string trigger)
+        public async Task RemoveAutoreply(ulong channelId, ulong guildId, string trigger)
         {
             var autoreply = GetExactAutoreply(channelId, guildId, trigger);
             if (autoreply == null)
@@ -81,9 +81,24 @@ namespace WazeBotDiscord.Autoreplies
             }
         }
 
+        public List<Autoreply> GetChannelAutoreplies(ulong channelId)
+        {
+            return _autoreplies.FindAll(a => a.ChannelId == channelId);
+        }
+
+        public List<Autoreply> GetGuildAutoreplies(ulong guildId)
+        {
+            return _autoreplies.FindAll(a => a.GuildId == guildId);
+        }
+
+        public List<Autoreply> GetGlobalAutoreplies()
+        {
+            return _autoreplies.FindAll(a => a.ChannelId == 1 && a.GuildId == 1);
+        }
+
         List<Autoreply> BuildList(ulong channelId, ulong guildId)
         {
-            var autoreplyList = _autoreplies.Where(a => a.ChannelId == channelId).ToList();
+            var autoreplyList = _autoreplies.FindAll(a => a.ChannelId == channelId);
             autoreplyList.AddRange(_autoreplies.FindAll(a => a.ChannelId == 1));
             autoreplyList.AddRange(_autoreplies.FindAll(a => a.GuildId == guildId));
             autoreplyList.AddRange(_autoreplies.FindAll(a => a.GuildId == 1));
