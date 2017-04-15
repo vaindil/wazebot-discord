@@ -2,9 +2,12 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
+using System.Net.Http;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using WazeBotDiscord.Autoreplies;
+using WazeBotDiscord.Twitter;
 
 namespace WazeBotDiscord
 {
@@ -13,8 +16,9 @@ namespace WazeBotDiscord
         DiscordSocketClient client;
         CommandService commands;
         DependencyMap map;
+        static HttpClient httpClient;
         AutoreplyService autoreplyService;
-        static bool isDev;
+        bool isDev;
 
         public static void Main(string[] args)
             => new Program().RunAsync().GetAwaiter().GetResult();
@@ -26,10 +30,6 @@ namespace WazeBotDiscord
             var token = Environment.GetEnvironmentVariable("DISCORD_API_TOKEN");
             if (token == null)
                 throw new ArgumentNullException(nameof(token), "No Discord API token env var found");
-
-            var dbConnString = Environment.GetEnvironmentVariable("WAZEBOT_DB_CONNECTIONSTRING");
-            if (dbConnString == null)
-                throw new ArgumentNullException(nameof(dbConnString), "No DB connection string env var found");
 
             var clientConfig = new DiscordSocketConfig
             {
@@ -48,19 +48,56 @@ namespace WazeBotDiscord
             await autoreplyService.InitAutoreplyServiceAsync();
 
             commands = new CommandService(commandsConfig);
+            httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("WazeBotDiscord/1.0");
+
             map = new DependencyMap();
             map.Add(autoreplyService);
-            await InstallCommands();
-
-            await client.LoginAsync(TokenType.Bot, token);
-            await client.StartAsync();
+            map.Add(httpClient);
 
             client.Ready += async () =>
             {
                 await client.SetGameAsync("with junction boxes");
             };
 
+            CancellationTokenSource twitterCancelToken = new CancellationTokenSource();
+
+            client.Connected += async () =>
+            {
+                twitterCancelToken = new CancellationTokenSource();
+
+                var twitterSvc = new TwitterService(client, twitterCancelToken.Token);
+                map.Add(twitterSvc);
+                try
+                {
+                    await twitterSvc.InitTwitterServiceAsync();
+                }
+                catch (Exception ex)
+                {
+                    if (ex is OperationCanceledException)
+                        Console.WriteLine("Twitter service canceled");
+                    else
+                        Console.WriteLine("Twitter service unhandled exception");
+                }
+                finally
+                {
+                    twitterCancelToken.Dispose();
+                }
+            };
+
+            client.Disconnected += (ex) =>
+            {
+                twitterCancelToken.Cancel();
+
+                return Task.CompletedTask;
+            };
+
             client.MessageReceived += HandleAutoreply;
+
+            await InstallCommands();
+
+            await client.LoginAsync(TokenType.Bot, token);
+            await client.StartAsync();
 
             await Task.Delay(-1);
         }
@@ -98,6 +135,24 @@ namespace WazeBotDiscord
         {
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
+        }
+
+        void VerifyEnvironmentVariables()
+        {
+            if (Environment.GetEnvironmentVariable("WAZEBOT_DB_CONNECTIONSTRING") == null)
+                throw new ArgumentNullException("DB connection string env var not found", innerException: null);
+
+            if (Environment.GetEnvironmentVariable("TWITTER_CONSUMER_KEY") == null)
+                throw new ArgumentNullException("Twitter consumer key env var not found", innerException: null);
+
+            if (Environment.GetEnvironmentVariable("TWITTER_CONSUMER_SECRET") == null)
+                throw new ArgumentNullException("Twitter consumer secret env var not found", innerException: null);
+
+            if (Environment.GetEnvironmentVariable("TWITTER_ACCESS_TOKEN") == null)
+                throw new ArgumentNullException("Twitter access token env var not found", innerException: null);
+
+            if (Environment.GetEnvironmentVariable("TWITTER_ACCESS_TOKEN_SECRET") == null)
+                throw new ArgumentNullException("Twitter access token secret env var not found", innerException: null);
         }
     }
 }

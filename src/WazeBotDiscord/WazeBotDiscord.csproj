@@ -6,15 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Events\**" />
+    <EmbeddedResource Remove="Events\**" />
+    <None Remove="Events\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Discord.Net.Commands" Version="1.0.0-rc2-00699" />
     <PackageReference Include="Discord.Net.Core" Version="1.0.0-rc2-00699" />
     <PackageReference Include="Discord.Net.Rest" Version="1.0.0-rc2-00699" />
     <PackageReference Include="Discord.Net.WebSocket" Version="1.0.0-rc2-00699" />
     <PackageReference Include="SapientGuardian.EntityFrameworkCore.MySql" Version="7.1.23" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Events\" />
   </ItemGroup>
 
 </Project>
