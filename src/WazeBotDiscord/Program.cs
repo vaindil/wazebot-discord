@@ -4,10 +4,8 @@ using Discord.WebSocket;
 using System;
 using System.Net.Http;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using WazeBotDiscord.Autoreplies;
-using WazeBotDiscord.Twitter;
 
 namespace WazeBotDiscord
 {
@@ -58,38 +56,6 @@ namespace WazeBotDiscord
             client.Ready += async () =>
             {
                 await client.SetGameAsync("with junction boxes");
-            };
-
-            CancellationTokenSource twitterCancelToken = new CancellationTokenSource();
-
-            client.Connected += async () =>
-            {
-                twitterCancelToken = new CancellationTokenSource();
-
-                var twitterSvc = new TwitterService(client, twitterCancelToken.Token);
-                map.Add(twitterSvc);
-                try
-                {
-                    await twitterSvc.InitTwitterServiceAsync();
-                }
-                catch (Exception ex)
-                {
-                    if (ex is OperationCanceledException)
-                        Console.WriteLine("Twitter service canceled");
-                    else
-                        Console.WriteLine("Twitter service unhandled exception");
-                }
-                finally
-                {
-                    twitterCancelToken.Dispose();
-                }
-            };
-
-            client.Disconnected += (ex) =>
-            {
-                twitterCancelToken.Cancel();
-
-                return Task.CompletedTask;
             };
 
             client.MessageReceived += HandleAutoreply;
