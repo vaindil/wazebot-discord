@@ -28,7 +28,7 @@ namespace WazeBotDiscord.Autoreplies
         {
             var autoreplyList = BuildList(channel.Id, channel.Guild.Id);
 
-            return autoreplyList.FirstOrDefault(r => content.StartsWith(r.Trigger));
+            return autoreplyList.FirstOrDefault(r => content.StartsWith($"!{r.Trigger}"));
         }
 
         public Autoreply GetExactAutoreply(ulong channelId, ulong guildId, string trigger)
