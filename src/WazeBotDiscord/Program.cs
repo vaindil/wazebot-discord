@@ -2,7 +2,6 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using WazeBotDiscord.Autoreplies;
@@ -15,17 +14,30 @@ namespace WazeBotDiscord
         CommandService commands;
         DependencyMap map;
         AutoreplyService autoreplyService;
+        static bool isDev;
 
         public static void Main(string[] args)
             => new Program().RunAsync().GetAwaiter().GetResult();
 
         public async Task RunAsync()
         {
+            isDev = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WAZEBOT_ISDEV"));
+
             var token = Environment.GetEnvironmentVariable("DISCORD_API_TOKEN");
             if (token == null)
                 throw new ArgumentNullException(nameof(token), "No Discord API token env var found");
 
-            client = new DiscordSocketClient();
+            var dbConnString = Environment.GetEnvironmentVariable("WAZEBOT_DB_CONNECTIONSTRING");
+            if (dbConnString == null)
+                throw new ArgumentNullException(nameof(dbConnString), "No DB connection string env var found");
+
+            var clientConfig = new DiscordSocketConfig
+            {
+                LogLevel = isDev ? LogSeverity.Info : LogSeverity.Warning
+            };
+
+            client = new DiscordSocketClient(clientConfig);
+            client.Log += Log;
 
             var commandsConfig = new CommandServiceConfig
             {
@@ -39,8 +51,6 @@ namespace WazeBotDiscord
             map = new DependencyMap();
             map.Add(autoreplyService);
             await InstallCommands();
-
-            client.Log += Log;
 
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();

@@ -10,14 +10,14 @@ namespace WazeBotDiscord.Autoreplies
         public int Id { get; set; }
 
         /// <summary>
-        /// ID of the guild in which this reply is active. Set to 1 to be global.
-        /// </summary>
-        public ulong GuildId { get; set; }
-
-        /// <summary>
         /// ID of the channel in which this reply is active. Set to 1 to be global to the guild.
         /// </summary>
         public ulong ChannelId { get; set; }
+
+        /// <summary>
+        /// ID of the guild in which this reply is active. Set to 1 to be global.
+        /// </summary>
+        public ulong GuildId { get; set; }
 
         /// <summary>
         /// The string to trigger the reply with no leading !.

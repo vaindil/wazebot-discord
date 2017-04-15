@@ -14,9 +14,6 @@ namespace WazeBotDiscord
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var dbConnectionString = Environment.GetEnvironmentVariable("WAZEBOT_DB_CONNECTIONSTRING");
-            if (dbConnectionString == null)
-                throw new ArgumentNullException(nameof(dbConnectionString), "DB connection string env var not found");
-
             optionsBuilder.UseMySQL(dbConnectionString);
         }
 
@@ -28,8 +25,8 @@ namespace WazeBotDiscord
                 e.HasKey(r => r.Id);
                 e.Property(r => r.Id).HasColumnName("id");
 
-                e.Property(r => r.GuildId).HasColumnName("guild_id").IsRequired();
                 e.Property(r => r.ChannelId).HasColumnName("channel_id").IsRequired();
+                e.Property(r => r.GuildId).HasColumnName("guild_id").IsRequired();
                 e.Property(r => r.Trigger).HasColumnName("trigger").IsRequired().HasMaxLength(20);
                 e.Property(r => r.Reply).HasColumnName("reply").IsRequired().HasMaxLength(1500);
                 e.Property(r => r.AddedById).HasColumnName("added_by_id").IsRequired();

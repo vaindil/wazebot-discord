@@ -25,15 +25,32 @@ namespace WazeBotDiscord.Modules
             var guildReplies = _arService.GetGuildAutoreplies(Context.Guild.Id).Select(r => r.Trigger);
             var globalReplies = _arService.GetGlobalAutoreplies().Select(r => r.Trigger);
 
+            guildReplies = guildReplies.Select(r => channelReplies.Contains(r) ? "~~" + r + "~~" : r);
+            globalReplies = globalReplies.Select(r => channelReplies.Contains(r) ? "~~" + r + "~~" : r);
+            globalReplies = globalReplies.Select(r => guildReplies.Contains(r) ? "~~" + r + "~~" : r);
+
+            var channelRepliesString = string.Join(", ", channelReplies);
+            var guildRepliesString = string.Join(", ", guildReplies);
+            var globalRepliesString = string.Join(", ", globalReplies);
+
+            if (string.IsNullOrEmpty(channelRepliesString))
+                channelRepliesString = "_(none)_";
+
+            if (string.IsNullOrEmpty(guildRepliesString))
+                guildRepliesString = "_(none)_";
+
+            if (string.IsNullOrEmpty(globalRepliesString))
+                globalRepliesString = "_(none)_";
+
             var msg = "__Channel__\n";
-            msg += string.Join(", ", channelReplies);
+            msg += channelRepliesString;
 
             msg += "\n\n__Server__\n";
-            msg += string.Join(", ", guildReplies);
+            msg += guildRepliesString;
 
             msg += "\n\n__Global__\n";
-            msg += string.Join(", ", globalReplies);
-            
+            msg += globalRepliesString;
+
             if (msg.Length > 1500)
             {
                 msg = msg.Substring(0, 1500);
@@ -80,9 +97,10 @@ namespace WazeBotDiscord.Modules
                     AddedAt = DateTime.UtcNow
                 };
 
-                await _arService.AddOrModifyAutoreply(autoreply);
+                var newlyAdded = await _arService.AddOrModifyAutoreply(autoreply);
+                var resultString = newlyAdded ? "added" : "edited";
 
-                await ReplyAsync($"Channel autoreply added. {autoreply.Trigger} | {autoreply.Reply}");
+                await ReplyAsync($"Channel autoreply {resultString}. {autoreply.Trigger} | {autoreply.Reply}");
             }
 
             [Command("server")]
@@ -111,13 +129,15 @@ namespace WazeBotDiscord.Modules
                     AddedAt = DateTime.UtcNow
                 };
 
-                await _arService.AddOrModifyAutoreply(autoreply);
+                var newlyAdded = await _arService.AddOrModifyAutoreply(autoreply);
+                var resultString = newlyAdded ? "added" : "edited";
 
-                await ReplyAsync($"Server autoreply added. {autoreply.Trigger} | {autoreply.Reply}");
+                await ReplyAsync($"Server autoreply {resultString}. {autoreply.Trigger} | {autoreply.Reply}");
             }
 
             [Command("global")]
             [Summary("Add a global autoreply.")]
+            [RequireLcOrAbove]
             public async Task AddToGlobal(string trigger, [Remainder]string reply)
             {
                 if (trigger.Length > 30)
@@ -142,9 +162,10 @@ namespace WazeBotDiscord.Modules
                     AddedAt = DateTime.UtcNow
                 };
 
-                await _arService.AddOrModifyAutoreply(autoreply);
+                var newlyAdded = await _arService.AddOrModifyAutoreply(autoreply);
+                var resultString = newlyAdded ? "added" : "edited";
 
-                await ReplyAsync($"Global autoreply added. {autoreply.Trigger} | {autoreply.Reply}");
+                await ReplyAsync($"Global autoreply {resultString}. {autoreply.Trigger} | {autoreply.Reply}");
             }
         }
 
@@ -166,9 +187,12 @@ namespace WazeBotDiscord.Modules
             {
                 trigger = trigger.ToLowerInvariant();
 
-                await _arService.RemoveAutoreply(Context.Channel.Id, Context.Guild.Id, trigger);
+                var removed = await _arService.RemoveAutoreply(Context.Channel.Id, Context.Guild.Id, trigger);
 
-                await ReplyAsync("Channel autoreply removed.");
+                if (removed)
+                    await ReplyAsync("Channel autoreply removed.");
+                else
+                    await ReplyAsync("Channel autoreply does not exist.");
             }
 
             [Command("server")]
@@ -177,20 +201,27 @@ namespace WazeBotDiscord.Modules
             {
                 trigger = trigger.ToLowerInvariant();
 
-                await _arService.RemoveAutoreply(1, Context.Guild.Id, trigger);
+                var removed = await _arService.RemoveAutoreply(1, Context.Guild.Id, trigger);
 
-                await ReplyAsync("Server autoreply removed.");
+                if (removed)
+                    await ReplyAsync("Server autoreply removed.");
+                else
+                    await ReplyAsync("Server autoreply does not exist.");
             }
 
             [Command("global")]
             [Summary("Remove a global autoreply.")]
+            [RequireLcOrAbove]
             public async Task RemoveFromGlobal(string trigger)
             {
                 trigger = trigger.ToLowerInvariant();
 
-                await _arService.RemoveAutoreply(1, 1, trigger);
+                var removed = await _arService.RemoveAutoreply(1, 1, trigger);
 
-                await ReplyAsync("Global autoreply removed.");
+                if (removed)
+                    await ReplyAsync("Global autoreply removed.");
+                else
+                    await ReplyAsync("Global autoreply does not exist.");
             }
         }
     }
