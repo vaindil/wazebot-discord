@@ -10,10 +10,11 @@ namespace WazeBotDiscord.Utilities
         public async override Task<PreconditionResult> CheckPermissions(
             ICommandContext context, CommandInfo command, IDependencyMap map)
         {
-            if ((await context.Client.GetApplicationInfoAsync()).Owner == context.Message.Author)
+            var appInfo = await context.Client.GetApplicationInfoAsync();
+            if (appInfo.Owner.Id == context.User.Id)
                 return PreconditionResult.FromSuccess();
 
-            var lcRole = ((SocketGuild)context.Guild).Roles.FirstOrDefault(r => r.Name == "Local Champ (LC)");
+            var lcRole = ((SocketGuild)context.Guild).Roles.FirstOrDefault(r => r.Name == "Local Champ");
             if (lcRole == null)
                 return PreconditionResult.FromError("This server is not configured for that command.");
 
