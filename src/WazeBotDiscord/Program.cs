@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using WazeBotDiscord.Autoreplies;
+using WazeBotDiscord.Twitter;
 
 namespace WazeBotDiscord
 {
@@ -58,6 +59,20 @@ namespace WazeBotDiscord
                 await client.SetGameAsync("with junction boxes");
             };
 
+            var twitterService = new TwitterService(client);
+            map.Add(twitterService);
+
+            client.Connected += async () =>
+            {
+                await twitterService.InitTwitterServiceAsync();
+            };
+
+            client.Disconnected += (ex) =>
+            {
+                twitterService.StopAllStreams();
+                return Task.CompletedTask;
+            };
+
             client.MessageReceived += HandleAutoreply;
 
             await InstallCommands();
@@ -82,8 +97,15 @@ namespace WazeBotDiscord
         public async Task HandleCommand(SocketMessage messageParam)
         {
             var message = messageParam as SocketUserMessage;
-            if (message == null)
+            if (message == null || message.Author.Id == client.CurrentUser.Id)
                 return;
+
+            if (isDev)
+            {
+                var appInfo = await client.GetApplicationInfoAsync();
+                if (message.Author.Id != appInfo.Owner.Id)
+                    return;
+            }
 
             int argPos = 0;
             if (!(message.HasCharPrefix('!', ref argPos) || message.HasMentionPrefix(client.CurrentUser, ref argPos)))
