@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using WazeBotDiscord.Autoreplies;
+using WazeBotDiscord.Glossary;
 using WazeBotDiscord.Twitter;
 
 namespace WazeBotDiscord
@@ -53,6 +54,9 @@ namespace WazeBotDiscord
             map = new DependencyMap();
             map.Add(autoreplyService);
             map.Add(httpClient);
+
+            var glossaryService = new GlossaryService(httpClient);
+            await glossaryService.InitAsync();
 
             client.Ready += async () =>
             {
