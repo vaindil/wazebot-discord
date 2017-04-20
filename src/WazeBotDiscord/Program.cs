@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using WazeBotDiscord.Autoreplies;
 using WazeBotDiscord.Glossary;
+using WazeBotDiscord.Lookup;
 using WazeBotDiscord.Twitter;
 
 namespace WazeBotDiscord
@@ -44,15 +45,19 @@ namespace WazeBotDiscord
                 CaseSensitiveCommands = false
             };
 
-            autoreplyService = new AutoreplyService();
-            await autoreplyService.InitAutoreplyServiceAsync();
-
             commands = new CommandService(commandsConfig);
             httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("WazeBotDiscord/1.0");
 
+            autoreplyService = new AutoreplyService();
+            await autoreplyService.InitAutoreplyServiceAsync();
+
+            var lookupService = new LookupService(httpClient);
+            await lookupService.InitAsync();
+
             map = new DependencyMap();
             map.Add(autoreplyService);
+            map.Add(lookupService);
             map.Add(httpClient);
 
             var glossaryService = new GlossaryService(httpClient);

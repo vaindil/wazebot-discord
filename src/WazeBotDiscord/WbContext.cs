@@ -3,6 +3,7 @@ using MySQL.Data.Entity.Extensions;
 using System;
 using WazeBotDiscord.Autoreplies;
 using WazeBotDiscord.Classes;
+using WazeBotDiscord.Lookup;
 using WazeBotDiscord.Twitter;
 
 namespace WazeBotDiscord
@@ -12,6 +13,7 @@ namespace WazeBotDiscord
         public DbSet<Autoreply> Autoreplies { get; set; }
         public DbSet<SyncedRole> SyncedRoles { get; set; }
         public DbSet<TwitterToCheck> TwittersToCheck { get; set; }
+        public DbSet<SheetToSearch> SheetsToSearch { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -60,6 +62,16 @@ namespace WazeBotDiscord
                 e.Property(t => t.FriendlyUsername).HasColumnName("friendly_username").IsRequired().HasMaxLength(45);
                 e.Property(t => t.DiscordGuildId).HasColumnName("discord_guild_id").IsRequired();
                 e.Property(t => t.DiscordChannelId).HasColumnName("discord_channel_id").IsRequired();
+            });
+
+            modelBuilder.Entity<SheetToSearch>(e =>
+            {
+                e.ToTable("sheet_to_search");
+                e.HasKey(r => r.ChannelId);
+
+                e.Property(r => r.ChannelId).HasColumnName("channel_id");
+                e.Property(r => r.GuildId).HasColumnName("guild_id").IsRequired();
+                e.Property(r => r.SheetId).HasColumnName("sheet_id").IsRequired().HasMaxLength(100);
             });
         }
     }
