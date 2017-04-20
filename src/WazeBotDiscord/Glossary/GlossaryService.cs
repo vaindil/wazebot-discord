@@ -28,7 +28,11 @@ namespace WazeBotDiscord.Glossary
 
         public GlossaryItem GetGlossaryItem(string term)
         {
-            return _items.FirstOrDefault(i => i.Term.ToLower() == term);
+            var item = _items.FirstOrDefault(i => i.Ids.Select(d => d.ToLowerInvariant()).Contains(term));
+            if (item != null)
+                return item;
+
+            return _items.FirstOrDefault(i => i.Term.ToLowerInvariant() == term);
         }
 
         async Task UpdateGlossaryItemsAsync()
@@ -44,7 +48,6 @@ namespace WazeBotDiscord.Glossary
             foreach (var thisRow in tblRows)
             {
                 var row = (IHtmlTableRowElement)thisRow;
-                //var row = (HtmlTableRowElement)thisRow;
 
                 var dtString = row.Cells[3].TextContent.Trim();
                 dtString = dtString.Split(null)[0];
@@ -56,11 +59,15 @@ namespace WazeBotDiscord.Glossary
                 if (string.IsNullOrEmpty(alternates) || alternates == "~")
                     alternates = "_(none)_";
 
+                var term = row.Cells[0].Children.First(c => c.TagName == "B").TextContent.Trim();
+                var ids = row.Cells[0].Children.Where(c => c.TagName == "SPAN").Select(c => c.Id.Trim());
+
                 _items.Add(new GlossaryItem
                 {
-                    Term = row.Cells[0].TextContent.Trim(),
+                    Ids = ids.ToList(),
+                    Term = term,
                     Alternates = alternates,
-                    Description = row.Cells[2].TextContent.Trim(),
+                    Description = row.Cells[2].TextContent.Replace("<br>", "\n").Trim(),
                     ModifiedAt = dt
                 });
             }

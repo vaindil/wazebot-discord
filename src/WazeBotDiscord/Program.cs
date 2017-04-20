@@ -27,10 +27,12 @@ namespace WazeBotDiscord
         public async Task RunAsync()
         {
             isDev = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WAZEBOT_ISDEV"));
-
+            
             var token = Environment.GetEnvironmentVariable("DISCORD_API_TOKEN");
             if (token == null)
                 throw new ArgumentNullException(nameof(token), "No Discord API token env var found");
+
+            VerifyEnvironmentVariables();
 
             var clientConfig = new DiscordSocketConfig
             {
@@ -52,16 +54,17 @@ namespace WazeBotDiscord
             autoreplyService = new AutoreplyService();
             await autoreplyService.InitAutoreplyServiceAsync();
 
+            var glossaryService = new GlossaryService(httpClient);
+            await glossaryService.InitAsync();
+
             var lookupService = new LookupService(httpClient);
             await lookupService.InitAsync();
 
             map = new DependencyMap();
             map.Add(autoreplyService);
             map.Add(lookupService);
+            map.Add(glossaryService);
             map.Add(httpClient);
-
-            var glossaryService = new GlossaryService(httpClient);
-            await glossaryService.InitAsync();
 
             client.Ready += async () =>
             {
