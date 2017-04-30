@@ -118,7 +118,7 @@ namespace WazeBotDiscord.Lookup
                     result.Append(" | ");
                 }
 
-                result.Remove(result.Length - 4, 3);
+                result.Remove(result.Length - 3, 3);
 
                 result.AppendLine("```");
             }
