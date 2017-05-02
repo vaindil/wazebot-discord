@@ -29,19 +29,24 @@ namespace WazeBotDiscord.Classes
 
     public enum WazeRole
     {
-        Level1,
-        Level2,
-        Level3,
-        Level4,
-        Level5,
-        Level6,
-        AreaManager,
-        LargeAreaManager,
-        StateManager,
-        CountryManager,
-        LocalChamp,
-        GlobalChamp,
+        Admin = 1,
+        AdminKeyholder,
+        RegionalCoordinator,
         AssistantRegionalCoordinator,
-        RegionalCoordinator
+        GlobalChamp,
+        LocalChamp,
+        Bot,
+        CountryManager,
+        StateManager,
+        LargeAreaManager,
+        AreaManager,
+        Mentor,
+        RegionSpecific,
+        Level6,
+        Level5,
+        Level4,
+        Level3,
+        Level2,
+        Level1
     }
 }
