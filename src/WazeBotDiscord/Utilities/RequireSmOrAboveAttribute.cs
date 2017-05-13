@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace WazeBotDiscord.Utilities
     public class RequireSmOrAboveAttribute : PreconditionAttribute
     {
         public async override Task<PreconditionResult> CheckPermissions(
-            ICommandContext context, CommandInfo command, IDependencyMap map)
+            ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             var appInfo = await context.Client.GetApplicationInfoAsync();
             if (appInfo.Owner.Id == context.User.Id)

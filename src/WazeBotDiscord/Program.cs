@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 using System.Reflection;
@@ -16,7 +17,7 @@ namespace WazeBotDiscord
     {
         DiscordSocketClient client;
         CommandService commands;
-        DependencyMap map;
+        IServiceProvider services;
         static HttpClient httpClient;
         AutoreplyService autoreplyService;
         bool isDev;
@@ -60,11 +61,11 @@ namespace WazeBotDiscord
             var lookupService = new LookupService(httpClient);
             await lookupService.InitAsync();
 
-            map = new DependencyMap();
-            map.Add(autoreplyService);
-            map.Add(lookupService);
-            map.Add(glossaryService);
-            map.Add(httpClient);
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton(autoreplyService);
+            serviceCollection.AddSingleton(lookupService);
+            serviceCollection.AddSingleton(glossaryService);
+            serviceCollection.AddSingleton(httpClient);
 
             client.Ready += async () =>
             {
@@ -72,7 +73,7 @@ namespace WazeBotDiscord
             };
 
             var twitterService = new TwitterService(client);
-            map.Add(twitterService);
+            serviceCollection.AddSingleton(twitterService);
 
             client.Connected += async () =>
             {
@@ -84,6 +85,8 @@ namespace WazeBotDiscord
                 twitterService.StopAllStreams();
                 return Task.CompletedTask;
             };
+
+            services = serviceCollection.BuildServiceProvider();
 
             client.MessageReceived += HandleAutoreply;
 
@@ -124,7 +127,7 @@ namespace WazeBotDiscord
                 return;
 
             var context = new CommandContext(client, message);
-            var result = await commands.ExecuteAsync(context, argPos, map);
+            var result = await commands.ExecuteAsync(context, argPos, services);
             if (!result.IsSuccess && result.Error == CommandError.UnmetPrecondition)
             {
                 await context.Channel.SendMessageAsync(result.ErrorReason);
