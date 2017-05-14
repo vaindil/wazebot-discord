@@ -16,23 +16,23 @@
 
     public static class GreatLakesRoles
     {
-        public const ulong GLR = 0;
-        public const ulong CountryManager = 0;
-        public const ulong StateManager = 0;
-        public const ulong LargeAreaManager = 0;
-        public const ulong AreaManager = 0;
-        public const ulong Mentor = 0;
-        public const ulong Level6 = 0;
-        public const ulong Level5 = 0;
-        public const ulong Level4 = 0;
-        public const ulong Level3 = 0;
-        public const ulong Level2 = 0;
-        public const ulong Level1 = 0;
-        public const ulong Fireside = 0;
-        public const ulong Illinois = 0;
-        public const ulong Indiana = 0;
-        public const ulong Michigan = 0;
-        public const ulong Ohio = 0;
-        public const ulong Wisconsin = 0;
+        public const ulong GLR = 313399864920899585;
+        public const ulong CountryManager = 299582351904866336;
+        public const ulong StateManager = 299566441751904258;
+        public const ulong LargeAreaManager = 299566346599923713;
+        public const ulong AreaManager = 299565817471696897;
+        public const ulong Mentor = 313399797396668418;
+        public const ulong Level6 = 299567659933106176;
+        public const ulong Level5 = 299567647794921472;
+        public const ulong Level4 = 299567633584619520;
+        public const ulong Level3 = 299567620049338378;
+        public const ulong Level2 = 299567607336534016;
+        public const ulong Level1 = 299567586319007747;
+        public const ulong Fireside = 299595056309075999;
+        public const ulong Illinois = 299566236487122944;
+        public const ulong Indiana = 299566253532643341;
+        public const ulong Michigan = 299566187791253504;
+        public const ulong Ohio = 299566271253577740;
+        public const ulong Wisconsin = 299566287158509568;
     }
 }
