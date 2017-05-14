@@ -1,6 +1,6 @@
-﻿namespace WazeBotDiscord.RegionClasses
+﻿namespace WazeBotDiscord.Regions
 {
-    public class GreatLakesChannels
+    public static class GreatLakesChannels
     {
         public const ulong StateManagers = 300032212324057088;
         public const ulong LargeAreaManagers = 299571569343070212;
@@ -14,7 +14,7 @@
         public const ulong OhioFireside = 300315151435825152;
     }
 
-    public class GreatLakesRoles
+    public static class GreatLakesRoles
     {
         public const ulong GLR = 0;
         public const ulong CountryManager = 0;

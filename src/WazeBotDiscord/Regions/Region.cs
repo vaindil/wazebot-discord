@@ -1,6 +1,6 @@
-﻿namespace WazeBotDiscord.RegionClasses
+﻿namespace WazeBotDiscord.Regions
 {
-    public class Regions
+    public static class Regions
     {
         public const ulong National = 300471946494214146;
         public const ulong Northwest = 0;

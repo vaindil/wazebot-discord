@@ -1,6 +1,6 @@
-﻿namespace WazeBotDiscord.RegionClasses
+﻿namespace WazeBotDiscord.Regions
 {
-    public class SouthwestChannels
+    public static class SouthwestChannels
     {
         public const ulong StateManagers = 0;
         public const ulong LargeAreaManagers = 0;
@@ -14,7 +14,7 @@
         public const ulong Utah = 0;
     }
 
-    public class SouthwestRoles
+    public static class SouthwestRoles
     {
         public const ulong SWR = 0;
         public const ulong CountryManager = 0;

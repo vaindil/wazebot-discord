@@ -1,19 +1,17 @@
-﻿namespace WazeBotDiscord.RegionClasses
+﻿namespace WazeBotDiscord.Regions
 {
-    public class NewEnglandChannels
+    public static class NortheastChannels
     {
         public const ulong StateManagers = 0;
         public const ulong LargeAreaManagers = 0;
         public const ulong AreaManagers = 0;
-        public const ulong Connecticut = 0;
-        public const ulong Maine = 0;
-        public const ulong Massachusetts = 0;
-        public const ulong NewHampshire = 0;
-        public const ulong RhodeIsland = 0;
-        public const ulong Vermont = 0;
-}
+        public const ulong Delaware = 0;
+        public const ulong NewJersey = 0;
+        public const ulong NewYork = 0;
+        public const ulong Pennsylvania = 0;
+    }
 
-    public class NewEnglandRoles
+    public static class NortheastRoles
     {
         public const ulong NER = 0;
         public const ulong CountryManager = 0;
@@ -27,11 +25,9 @@
         public const ulong Level3 = 0;
         public const ulong Level2 = 0;
         public const ulong Level1 = 0;
-        public const ulong Connecticut = 0;
-        public const ulong Maine = 0;
-        public const ulong Massachusetts = 0;
-        public const ulong NewHampshire = 0;
-        public const ulong RhodeIsland = 0;
-        public const ulong Vermont = 0;
+        public const ulong Delaware = 0;
+        public const ulong NewJersey = 0;
+        public const ulong NewYork = 0;
+        public const ulong Pennsylvania = 0;
     }
 }
