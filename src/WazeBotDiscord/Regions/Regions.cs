@@ -9,8 +9,8 @@
         public const ulong SouthCentral = 0;
         public const ulong GreatLakes = 299563059695976451;
         public const ulong SouthAtlantic = 300737538384199681;
-        public const ulong Southeast = 0;
-        public const ulong NewEngland = 0;
+        public const ulong Southeast = 313428729739083776;
+        public const ulong NewEngland = 300482201198395417;
         public const ulong Northeast = 300481818619150336;
         public const ulong MidAtlantic = 299676784327393281;
     }
