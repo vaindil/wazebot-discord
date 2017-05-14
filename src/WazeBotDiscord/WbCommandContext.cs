@@ -12,5 +12,7 @@ namespace WazeBotDiscord
             : base(client, msg)
         {
         }
+
+
     }
 }
