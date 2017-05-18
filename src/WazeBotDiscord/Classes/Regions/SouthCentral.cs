@@ -1,4 +1,4 @@
-﻿namespace WazeBotDiscord.Regions
+﻿namespace WazeBotDiscord.Classes.Regions
 {
     public static class SouthCentralChannels
     {
