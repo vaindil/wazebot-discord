@@ -98,6 +98,8 @@ namespace WazeBotDiscord
             await Task.Delay(-1);
         }
 
+        private Task Client_GuildMemberUpdated(SocketGuildUser arg1, SocketGuildUser arg2) => throw new NotImplementedException();
+
         async Task HandleAutoreply(SocketMessage msg)
         {
             await AutoreplyHandler.HandleAutoreplyAsync(msg, autoreplyService);

@@ -11,7 +11,6 @@ namespace WazeBotDiscord
     public class WbContext : DbContext
     {
         public DbSet<Autoreply> Autoreplies { get; set; }
-        public DbSet<SyncedRole> SyncedRoles { get; set; }
         public DbSet<TwitterToCheck> TwittersToCheck { get; set; }
         public DbSet<SheetToSearch> SheetsToSearch { get; set; }
 
@@ -34,20 +33,6 @@ namespace WazeBotDiscord
                 e.Property(r => r.Reply).HasColumnName("reply").IsRequired().HasMaxLength(1500);
                 e.Property(r => r.AddedById).HasColumnName("added_by_id").IsRequired();
                 e.Property(r => r.AddedAt).HasColumnName("added_at").IsRequired();
-            });
-
-            modelBuilder.Entity<SyncedRole>(e =>
-            {
-                e.ToTable("synced_role");
-                e.HasKey(r => r.UserId);
-                e.Property(r => r.UserId).HasColumnName("user_id");
-
-                e.Ignore(r => r.WazeRole);
-                e.Property(r => r.WazeRoleValue).HasColumnName("waze_role").IsRequired();
-
-                e.Property(r => r.SetById).HasColumnName("set_by_id").IsRequired();
-                e.Property(r => r.SetInGuildId).HasColumnName("set_in_guild_id").IsRequired();
-                e.Property(r => r.SetAt).HasColumnName("set_at").IsRequired();
             });
 
             modelBuilder.Entity<TwitterToCheck>(e =>

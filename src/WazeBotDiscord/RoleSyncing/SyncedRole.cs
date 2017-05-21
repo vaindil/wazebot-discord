@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WazeBotDiscord.Classes
+namespace WazeBotDiscord.RoleSyncing
 {
     public class SyncedRole
     {
@@ -29,24 +29,22 @@ namespace WazeBotDiscord.Classes
 
     public enum WazeRole
     {
-        Admin = 1,
-        AdminKeyholder,
-        RegionalCoordinator,
-        AssistantRegionalCoordinator,
-        GlobalChamp,
-        LocalChamp,
-        Bot,
-        CountryManager,
+        CountryManager = 1,
         StateManager,
         LargeAreaManager,
         AreaManager,
         Mentor,
-        RegionSpecific,
         Level6,
         Level5,
         Level4,
         Level3,
         Level2,
         Level1
+    }
+
+    public enum WazeRoleStatus
+    {
+        Added,
+        Removed
     }
 }
