@@ -140,7 +140,7 @@ namespace WazeBotDiscord.Modules
             var msg = await ReplyAsync($"{user.Mention}: Just a moment...");
 
             var result = await RoleSyncHelpers.ToggleSyncedRolesAsync(user, Mentor.Ids, Context);
-            
+
             if (result == SyncedRoleStatus.Added)
                 await msg.ModifyAsync(m => m.Content = $"{user.Mention}: Added AM, removed SM and LAM (if applicable).");
             else if (result == SyncedRoleStatus.Removed)
@@ -149,7 +149,7 @@ namespace WazeBotDiscord.Modules
 
         [Command("l6", RunMode = RunMode.Async)]
         [Alias("level6", "r6", "rank6")]
-        [RequireCmOrAbove]
+        [RequireChampInNationalGuild]
         public async Task ToggleL6(IUser user)
         {
             if (IsSelf(user))
