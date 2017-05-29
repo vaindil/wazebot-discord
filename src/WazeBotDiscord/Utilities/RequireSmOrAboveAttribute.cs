@@ -1,8 +1,8 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using WazeBotDiscord.Classes.Roles;
 
 namespace WazeBotDiscord.Utilities
 {
@@ -15,14 +15,17 @@ namespace WazeBotDiscord.Utilities
             if (appInfo.Owner.Id == context.User.Id)
                 return PreconditionResult.FromSuccess();
 
-            var smRole = ((SocketGuild)context.Guild).Roles.FirstOrDefault(r => r.Name == "State Manager");
-            if (smRole == null)
+            var guild = context.Guild as SocketGuild;
+            var exists = StateManager.Ids.TryGetValue(guild.Id, out var roleId);
+            if (!exists)
                 return PreconditionResult.FromError("This server is not configured for that command.");
 
-            if (((SocketGuildUser)context.Message.Author).Hierarchy >= smRole.Position)
+            var cmRole = guild.GetRole(roleId);
+
+            if (((SocketGuildUser)context.Message.Author).Hierarchy >= cmRole.Position)
                 return PreconditionResult.FromSuccess();
 
-            return PreconditionResult.FromError("You do not have permission to use that command.");
+            return PreconditionResult.FromError("You must be SM or above to use that command.");
         }
     }
 }

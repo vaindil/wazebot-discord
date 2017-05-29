@@ -42,7 +42,7 @@ namespace WazeBotDiscord
 
                 e.Ignore(r => r.RequiredKeywords);
                 e.Property(r => r.RequiredKeywordsValue).HasColumnName("required_keywords").HasMaxLength(150);
-                
+
                 e.Property(t => t.UserId).HasColumnName("user_id").IsRequired();
                 e.Property(t => t.FriendlyUsername).HasColumnName("friendly_username").IsRequired().HasMaxLength(45);
                 e.Property(t => t.DiscordGuildId).HasColumnName("discord_guild_id").IsRequired();

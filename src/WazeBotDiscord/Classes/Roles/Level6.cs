@@ -6,7 +6,7 @@ namespace WazeBotDiscord.Classes.Roles
     {
         public static IReadOnlyDictionary<ulong, ulong> Ids = new Dictionary<ulong, ulong>
         {
-            // National
+            // [] = ,National
             [313435914540154890] = 313436258846375936, // Northwest
             [301113669696356352] = 301417011848937483, // Southwest
             [313433524130545664] = 313433908400226305, // Plains
@@ -16,7 +16,7 @@ namespace WazeBotDiscord.Classes.Roles
             [313428729739083776] = 313429136104357888, // Southeast
             [300482201198395417] = 313425685517697025, // New England
             [300481818619150336] = 302529616260890627, // Northeast
-            [299676784327393281] = 313425685517697025  // Mid Atlantic
+            [299676784327393281] = 299681069546995712  // Mid Atlantic
         };
     }
 }

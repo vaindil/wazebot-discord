@@ -28,7 +28,7 @@ namespace WazeBotDiscord
         public async Task RunAsync()
         {
             isDev = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WAZEBOT_ISDEV"));
-            
+
             var token = Environment.GetEnvironmentVariable("DISCORD_API_TOKEN");
             if (token == null)
                 throw new ArgumentNullException(nameof(token), "No Discord API token env var found");
@@ -37,7 +37,8 @@ namespace WazeBotDiscord
 
             var clientConfig = new DiscordSocketConfig
             {
-                LogLevel = isDev ? LogSeverity.Info : LogSeverity.Warning
+                LogLevel = isDev ? LogSeverity.Info : LogSeverity.Warning,
+                AlwaysDownloadUsers = true
             };
 
             client = new DiscordSocketClient(clientConfig);
@@ -67,18 +68,12 @@ namespace WazeBotDiscord
             serviceCollection.AddSingleton(glossaryService);
             serviceCollection.AddSingleton(httpClient);
 
-            client.Ready += async () =>
-            {
-                await client.SetGameAsync("with junction boxes");
-            };
+            client.Ready += async () => await client.SetGameAsync("with junction boxes");
 
             var twitterService = new TwitterService(client);
             serviceCollection.AddSingleton(twitterService);
 
-            client.Connected += async () =>
-            {
-                await twitterService.InitTwitterServiceAsync();
-            };
+            client.Connected += async () => await twitterService.InitTwitterServiceAsync();
 
             client.Disconnected += (ex) =>
             {
@@ -97,8 +92,6 @@ namespace WazeBotDiscord
 
             await Task.Delay(-1);
         }
-
-        private Task Client_GuildMemberUpdated(SocketGuildUser arg1, SocketGuildUser arg2) => throw new NotImplementedException();
 
         async Task HandleAutoreply(SocketMessage msg)
         {
@@ -133,6 +126,11 @@ namespace WazeBotDiscord
             if (!result.IsSuccess && result.Error == CommandError.UnmetPrecondition)
             {
                 await context.Channel.SendMessageAsync(result.ErrorReason);
+            }
+            else if (!result.IsSuccess && result.Error == CommandError.BadArgCount)
+            {
+                await context.Channel.SendMessageAsync("You didn't specify the right parameters. " +
+                    "If you're using a role command, you probably forgot to specify the user.");
             }
         }
 

@@ -61,7 +61,6 @@ namespace WazeBotDiscord.Modules
         }
 
         [Group("add")]
-        [RequireSmOrAbove]
         public class AddAutoreplyModule : ModuleBase
         {
             readonly AutoreplyService _arService;
@@ -73,6 +72,7 @@ namespace WazeBotDiscord.Modules
 
             [Command("channel")]
             [Summary("Add an autoreply to this channel.")]
+            [RequireSmOrAbove]
             public async Task AddToChannel(string trigger, [Remainder]string reply)
             {
                 if (trigger.Length > 30)
@@ -105,6 +105,7 @@ namespace WazeBotDiscord.Modules
 
             [Command("server")]
             [Summary("Add an autoreply to this server.")]
+            [RequireSmOrAbove]
             public async Task AddToServer(string trigger, [Remainder]string reply)
             {
                 if (trigger.Length > 30)
@@ -137,7 +138,7 @@ namespace WazeBotDiscord.Modules
 
             [Command("global")]
             [Summary("Add a global autoreply.")]
-            [RequireLcOrAbove]
+            [RequireChampInNationalGuild]
             public async Task AddToGlobal(string trigger, [Remainder]string reply)
             {
                 if (trigger.Length > 30)
@@ -171,7 +172,6 @@ namespace WazeBotDiscord.Modules
 
         [Group("remove")]
         [Alias("delete")]
-        [RequireSmOrAbove]
         public class RemoveAutoreplyModule : ModuleBase
         {
             readonly AutoreplyService _arService;
@@ -183,6 +183,7 @@ namespace WazeBotDiscord.Modules
 
             [Command("channel")]
             [Summary("Remove an autoreply from this channel.")]
+            [RequireSmOrAbove]
             public async Task RemoveFromChannel(string trigger)
             {
                 trigger = trigger.ToLowerInvariant();
@@ -197,6 +198,7 @@ namespace WazeBotDiscord.Modules
 
             [Command("server")]
             [Summary("Remove an autoreply from this server.")]
+            [RequireSmOrAbove]
             public async Task RemoveFromServer(string trigger)
             {
                 trigger = trigger.ToLowerInvariant();
@@ -211,7 +213,7 @@ namespace WazeBotDiscord.Modules
 
             [Command("global")]
             [Summary("Remove a global autoreply.")]
-            [RequireLcOrAbove]
+            [RequireChampInNationalGuild]
             public async Task RemoveFromGlobal(string trigger)
             {
                 trigger = trigger.ToLowerInvariant();

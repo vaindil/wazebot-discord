@@ -8,7 +8,7 @@ using WazeBotDiscord.Utilities;
 namespace WazeBotDiscord.Modules
 {
     [Group("roleid")]
-    [RequireLcOrAbove]
+    [RequireOwner]
     public class RoleIdModule : ModuleBase
     {
         [Command]
