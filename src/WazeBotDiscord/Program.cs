@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using WazeBotDiscord.Autoreplies;
+using WazeBotDiscord.Events;
 using WazeBotDiscord.Glossary;
 using WazeBotDiscord.Lookup;
 using WazeBotDiscord.Twitter;
@@ -84,6 +85,7 @@ namespace WazeBotDiscord
             services = serviceCollection.BuildServiceProvider();
 
             client.MessageReceived += HandleAutoreply;
+            client.UserJoined += async (SocketGuildUser user) => await UserJoinedRoleSyncEvent.SyncRoles(user, client);
 
             await InstallCommands();
 

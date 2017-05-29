@@ -72,7 +72,7 @@ namespace WazeBotDiscord.Utilities
             }
         }
 
-        static async Task<IEnumerable<SocketGuild>> GetUserGuildsAsync(
+        public static async Task<IEnumerable<SocketGuild>> GetUserGuildsAsync(
             SocketGuildUser guildUser,
             IDiscordClient client)
         {
