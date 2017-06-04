@@ -142,9 +142,9 @@ namespace WazeBotDiscord.Modules
             var result = await RoleSyncHelpers.ToggleSyncedRolesAsync(user, Mentor.Ids, Context);
 
             if (result == SyncedRoleStatus.Added)
-                await msg.ModifyAsync(m => m.Content = $"{user.Mention}: Added AM, removed SM and LAM (if applicable).");
+                await msg.ModifyAsync(m => m.Content = $"{user.Mention}: Added mentor.");
             else if (result == SyncedRoleStatus.Removed)
-                await msg.ModifyAsync(m => m.Content = $"{user.Mention}: Removed AM.");
+                await msg.ModifyAsync(m => m.Content = $"{user.Mention}: Removed mentor.");
         }
 
         [Command("l6", RunMode = RunMode.Async)]
