@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using MySQL.Data.Entity.Extensions;
 using System;
 using WazeBotDiscord.Autoreplies;
-using WazeBotDiscord.Classes;
+using WazeBotDiscord.Keywords;
 using WazeBotDiscord.Lookup;
 using WazeBotDiscord.Twitter;
 
@@ -13,6 +14,7 @@ namespace WazeBotDiscord
         public DbSet<Autoreply> Autoreplies { get; set; }
         public DbSet<TwitterToCheck> TwittersToCheck { get; set; }
         public DbSet<SheetToSearch> SheetsToSearch { get; set; }
+        public DbSet<DbKeyword> Keywords { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -57,6 +59,43 @@ namespace WazeBotDiscord
                 e.Property(r => r.ChannelId).HasColumnName("channel_id");
                 e.Property(r => r.GuildId).HasColumnName("guild_id").IsRequired();
                 e.Property(r => r.SheetId).HasColumnName("sheet_id").IsRequired().HasMaxLength(100);
+            });
+
+            modelBuilder.Entity<DbKeyword>(e =>
+            {
+                e.ToTable("keyword");
+                e.HasKey(r => r.Id);
+
+                e.Property(r => r.UserId).HasColumnName("user_id").IsRequired();
+                e.Property(r => r.Keyword).HasColumnName("keyword").IsRequired().HasMaxLength(30);
+
+                e.HasMany(r => r.IgnoredChannels)
+                    .WithOne(s => s.Keyword)
+                    .HasForeignKey(s => s.KeywordId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                e.HasMany(r => r.IgnoredGuilds)
+                    .WithOne(s => s.Keyword)
+                    .HasForeignKey(s => s.KeywordId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<DbKeywordIgnoredChannel>(e =>
+            {
+                e.ToTable("keyword_ignored_channel");
+                e.HasKey(r => r.Id);
+
+                e.Property(r => r.KeywordId).HasColumnName("keyword_id").IsRequired();
+                e.Property(r => r.ChannelId).HasColumnName("channel_id").IsRequired();
+            });
+
+            modelBuilder.Entity<DbKeywordIgnoredGuild>(e =>
+            {
+                e.ToTable("keyword_ignored_guild");
+                e.HasKey(r => r.Id);
+
+                e.Property(r => r.KeywordId).HasColumnName("keyword_id").IsRequired();
+                e.Property(r => r.GuildId).HasColumnName("guild_id").IsRequired();
             });
         }
     }
