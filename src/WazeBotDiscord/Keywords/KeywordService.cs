@@ -9,6 +9,9 @@ namespace WazeBotDiscord.Keywords
     {
         List<KeywordRecord> _keywords;
 
+        /// <summary>
+        /// Initializes the keyword service from the database.
+        /// </summary>
         public async Task InitKeywordServiceAsync()
         {
             List<DbKeyword> keywords;
@@ -31,25 +34,41 @@ namespace WazeBotDiscord.Keywords
             }).ToList();
         }
 
-        public List<ulong> CheckForKeyword(string message)
+        /// <summary>
+        /// Checks a message for any matching keywords and returns all matches.
+        /// </summary>
+        /// <param name="message">The message to check</param>
+        /// <returns>List of tuples of user ID and keyword that was matched</returns>
+        public List<(ulong userId, string match)> CheckForKeyword(string message)
         {
             message = message.ToLowerInvariant();
-            var userIds = new List<ulong>();
+            var matches = new List<(ulong userId, string match)>();
 
             foreach (var k in _keywords)
             {
                 if (message.Contains(k.Keyword))
-                    userIds.Add(k.UserId);
+                    matches.Add((k.UserId, k.Keyword));
             }
 
-            return userIds;
+            return matches;
         }
 
+        /// <summary>
+        /// Get all keywords for a user.
+        /// </summary>
+        /// <param name="userId">User ID to get keywords for</param>
+        /// <returns>List of KeywordRecords</returns>
         public List<KeywordRecord> GetKeywordsForUser(ulong userId)
         {
             return _keywords.Where(k => k.UserId == userId).ToList();
         }
 
+        /// <summary>
+        /// Adds a new keyword to a user.
+        /// </summary>
+        /// <param name="userId">ID of the user to add the keyword to</param>
+        /// <param name="keyword">Keyword to add</param>
+        /// <returns>Tuple of the keyword and whether user was already subscribed</returns>
         public async Task<(KeywordRecord keyword, bool alreadyExisted)> AddKeywordAsync(ulong userId, string keyword)
         {
             keyword = keyword.ToLowerInvariant();
@@ -80,6 +99,11 @@ namespace WazeBotDiscord.Keywords
             return (record, false);
         }
 
+        /// <summary>
+        /// Removes a keyword from a user.
+        /// </summary>
+        /// <param name="userId">ID of the user to remove the keyword from</param>
+        /// <param name="keyword">Keyword to remove</param>
         public async Task RemoveKeywordAsync(ulong userId, string keyword)
         {
             keyword = keyword.ToLowerInvariant();
@@ -101,6 +125,13 @@ namespace WazeBotDiscord.Keywords
             }
         }
 
+        /// <summary>
+        /// Ignores channels for a given user keyword.
+        /// </summary>
+        /// <param name="userId">ID of the user to add the ignores to</param>
+        /// <param name="keyword">Keyword that is being ignored</param>
+        /// <param name="channelIds">Channel IDs that are being ignored</param>
+        /// <returns>True if success, false if the user isn't subscribed to the provided keyword</returns>
         public async Task<bool> IgnoreChannelsAsync(ulong userId, string keyword, params ulong[] channelIds)
         {
             keyword = keyword.ToLowerInvariant();
@@ -135,6 +166,13 @@ namespace WazeBotDiscord.Keywords
             return true;
         }
 
+        /// <summary>
+        /// Ignores guilds for a given user keyword.
+        /// </summary>
+        /// <param name="userId">ID of the user to add the ignores to</param>
+        /// <param name="keyword">Keyword that is being ignored</param>
+        /// <param name="guildIds">Guild IDs that are being ignored</param>
+        /// <returns>True if success, false if the user isn't subscribed to the provided keyword</returns>
         public async Task<bool> IgnoreGuildsAsync(ulong userId, string keyword, params ulong[] guildIds)
         {
             keyword = keyword.ToLowerInvariant();
@@ -169,6 +207,13 @@ namespace WazeBotDiscord.Keywords
             return true;
         }
 
+        /// <summary>
+        /// Unignores channels for a given user keyword.
+        /// </summary>
+        /// <param name="userId">ID of the user to remove the ignores from</param>
+        /// <param name="keyword">Keyword that is being unignored</param>
+        /// <param name="channelIds">Channel IDs that are being unignored</param>
+        /// <returns>True if success, false if the user isn't subscribed to the provided keyword</returns>
         public async Task<bool> UnignoreChannelsAsync(ulong userId, string keyword, params ulong[] channelIds)
         {
             keyword = keyword.ToLowerInvariant();
@@ -198,6 +243,13 @@ namespace WazeBotDiscord.Keywords
             return true;
         }
 
+        /// <summary>
+        /// Unignores guilds for a given user keyword.
+        /// </summary>
+        /// <param name="userId">ID of the user to remove the ignores from</param>
+        /// <param name="keyword">Keyword that is being unignored</param>
+        /// <param name="guildIds">Guild IDs that are being unignored</param>
+        /// <returns>True if success, false if the user isn't subscribed to the provided keyword</returns>
         public async Task<bool> UnignoreGuildsAsync(ulong userId, string keyword, params ulong[] guildIds)
         {
             keyword = keyword.ToLowerInvariant();
@@ -227,6 +279,12 @@ namespace WazeBotDiscord.Keywords
             return true;
         }
 
+        /// <summary>
+        /// Gets a specific KeywordRecord from the list in memory.
+        /// </summary>
+        /// <param name="userId">User ID for the record</param>
+        /// <param name="keyword">The keyword for the record</param>
+        /// <returns>The requested KeywordRecord or null if not found</returns>
         KeywordRecord GetRecord(ulong userId, string keyword)
         {
             return _keywords.Find(k => k.UserId == userId && k.Keyword == keyword);
