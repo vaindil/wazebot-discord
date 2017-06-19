@@ -38,16 +38,23 @@ namespace WazeBotDiscord.Keywords
         /// Checks a message for any matching keywords and returns all matches.
         /// </summary>
         /// <param name="message">The message to check</param>
-        /// <returns>List of tuples of user ID and keyword that was matched</returns>
-        public List<(ulong userId, string match)> CheckForKeyword(string message)
+        /// <returns>List of matches</returns>
+        public List<KeywordMatch> CheckForKeyword(string message)
         {
             message = message.ToLowerInvariant();
-            var matches = new List<(ulong userId, string match)>();
+            var matches = new List<KeywordMatch>();
 
             foreach (var k in _keywords)
             {
-                if (message.Contains(k.Keyword))
-                    matches.Add((k.UserId, k.Keyword));
+                if (!message.Contains(k.Keyword))
+                    continue;
+
+                var existingMatch = matches.Find(m => m.UserId == k.UserId);
+                if (existingMatch != null)
+                    existingMatch.MatchedKeywords.Add(k.Keyword);
+                else
+                    matches.Add(new KeywordMatch(k.UserId, k.Keyword));
+
             }
 
             return matches;
@@ -69,7 +76,7 @@ namespace WazeBotDiscord.Keywords
         /// <param name="userId">ID of the user to add the keyword to</param>
         /// <param name="keyword">Keyword to add</param>
         /// <returns>Tuple of the keyword and whether user was already subscribed</returns>
-        public async Task<(KeywordRecord keyword, bool alreadyExisted)> AddKeywordAsync(ulong userId, string keyword)
+        public async Task<(KeywordRecord Keyword, bool AlreadyExisted)> AddKeywordAsync(ulong userId, string keyword)
         {
             keyword = keyword.ToLowerInvariant();
 

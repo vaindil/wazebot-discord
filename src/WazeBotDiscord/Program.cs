@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using WazeBotDiscord.Autoreplies;
 using WazeBotDiscord.Events;
 using WazeBotDiscord.Glossary;
+using WazeBotDiscord.Keywords;
 using WazeBotDiscord.Lookup;
 using WazeBotDiscord.Twitter;
 
@@ -20,7 +21,6 @@ namespace WazeBotDiscord
         CommandService commands;
         IServiceProvider services;
         static HttpClient httpClient;
-        AutoreplyService autoreplyService;
         bool isDev;
 
         public static void Main(string[] args)
@@ -54,8 +54,11 @@ namespace WazeBotDiscord
             httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("WazeBotDiscord/1.0");
 
-            autoreplyService = new AutoreplyService();
+            var autoreplyService = new AutoreplyService();
             await autoreplyService.InitAutoreplyServiceAsync();
+
+            var keywordService = new KeywordService();
+            await keywordService.InitKeywordServiceAsync();
 
             var glossaryService = new GlossaryService(httpClient);
             await glossaryService.InitAsync();
@@ -65,6 +68,7 @@ namespace WazeBotDiscord
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton(autoreplyService);
+            serviceCollection.AddSingleton(keywordService);
             serviceCollection.AddSingleton(lookupService);
             serviceCollection.AddSingleton(glossaryService);
             serviceCollection.AddSingleton(httpClient);
@@ -84,7 +88,12 @@ namespace WazeBotDiscord
 
             services = serviceCollection.BuildServiceProvider();
 
-            client.MessageReceived += HandleAutoreply;
+            client.MessageReceived += async (SocketMessage msg) =>
+                await AutoreplyHandler.HandleAutoreplyAsync(msg, autoreplyService);
+
+            client.MessageReceived += async (SocketMessage msg) =>
+                await KeywordHandler.HandleKeywordAsync(msg, keywordService, client);
+
             client.UserJoined += async (SocketGuildUser user) => await UserJoinedRoleSyncEvent.SyncRoles(user, client);
 
             await InstallCommands();
@@ -93,11 +102,6 @@ namespace WazeBotDiscord
             await client.StartAsync();
 
             await Task.Delay(-1);
-        }
-
-        async Task HandleAutoreply(SocketMessage msg)
-        {
-            await AutoreplyHandler.HandleAutoreplyAsync(msg, autoreplyService);
         }
 
         public async Task InstallCommands()

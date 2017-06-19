@@ -10,7 +10,7 @@ namespace WazeBotDiscord.Autoreplies
             var msg = (SocketUserMessage)inMsg;
             var content = msg.Content.ToLowerInvariant();
             var channel = (SocketTextChannel)msg.Channel;
-            
+
             var ar = service.SearchForAutoreply(content, channel);
             if (ar == null)
                 return;
