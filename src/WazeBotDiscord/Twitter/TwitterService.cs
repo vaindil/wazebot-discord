@@ -83,8 +83,8 @@ namespace WazeBotDiscord.Twitter
             var author = new EmbedAuthorBuilder
             {
                 Name = tweet.CreatedBy.ScreenName + " (" + tweet.CreatedBy.Name + ")",
-                Url = tweet.CreatedBy.Url,
-                IconUrl = tweet.CreatedBy.ProfileImageUrlHttps
+                Url = new Uri(tweet.CreatedBy.Url),
+                IconUrl = new Uri(tweet.CreatedBy.ProfileImageUrlHttps)
             };
 
             var footer = new EmbedFooterBuilder
@@ -98,7 +98,7 @@ namespace WazeBotDiscord.Twitter
 
             embed.Title = "Go to tweet";
             embed.Description = WebUtility.HtmlDecode(tweet.Text);
-            embed.Url = tweet.Url;
+            embed.Url = new Uri(tweet.Url);
             embed.Color = new Color(29, 161, 242);
             embed.Author = author;
             embed.Footer = footer;
