@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace WazeBotDiscord.Keywords
 {
     [Group("keyword")]
-    [Alias("keywords", "kwd", "kwds")]
+    [Alias("keywords", "kwd", "kwds", "subscription", "subscriptions", "sub", "subs")]
     public class KeywordModule : ModuleBase
     {
         readonly KeywordService _kwdSvc;
@@ -18,13 +18,8 @@ namespace WazeBotDiscord.Keywords
         }
 
         [Command]
+        [Alias("help")]
         public async Task Help([Remainder]string unused = null)
-        {
-            await ReplyAsync(_helpLink);
-        }
-
-        [Command("help")]
-        public async Task HelpAgain([Remainder]string unused = null)
         {
             await ReplyAsync(_helpLink);
         }
