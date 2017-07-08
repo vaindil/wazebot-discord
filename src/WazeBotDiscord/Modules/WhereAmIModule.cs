@@ -3,10 +3,9 @@ using System.Threading.Tasks;
 
 namespace WazeBotDiscord.Modules
 {
-    [Group("whereami")]
     public class WhereAmIModule : ModuleBase
     {
-        [Command]
+        [Command("whereami")]
         public async Task WhereAmI([Remainder]string unused = null)
         {
             await ReplyAsync($"Channel ID: `{Context.Channel.Id.ToString()}`\n" +

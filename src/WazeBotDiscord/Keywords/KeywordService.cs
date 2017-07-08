@@ -142,15 +142,15 @@ namespace WazeBotDiscord.Keywords
         /// <param name="channelIds">Channel IDs that are being ignored</param>
         /// <returns>True if success, false if the user isn't subscribed to the provided keyword or 
         /// it is already being ignored</returns>
-        public async Task<bool> IgnoreChannelsAsync(ulong userId, string keyword, params ulong[] channelIds)
+        public async Task<IgnoreResult> IgnoreChannelsAsync(ulong userId, string keyword, params ulong[] channelIds)
         {
             keyword = keyword.ToLowerInvariant();
 
             var record = GetRecord(userId, keyword);
             if (record == null)
-                return false;
+                return IgnoreResult.NotSubscribed;
             if (channelIds.All(c => record.IgnoredChannels.Contains(c)))
-                return false;
+                return IgnoreResult.AlreadyIgnored;
 
             var channels = channelIds.Distinct().Except(record.IgnoredChannels);
             var dbChannels = channels.Select(c => new DbKeywordIgnoredChannel
@@ -165,7 +165,7 @@ namespace WazeBotDiscord.Keywords
                     .Include(k => k.IgnoredChannels)
                     .FirstOrDefaultAsync(k => k.Id == record.Id);
                 if (dbRecord == null)
-                    return false;
+                    return IgnoreResult.NotSubscribed;
 
                 foreach (var c in dbChannels)
                     dbRecord.IgnoredChannels.Add(c);
@@ -175,7 +175,7 @@ namespace WazeBotDiscord.Keywords
 
             record.IgnoredChannels.AddRange(channels);
 
-            return true;
+            return IgnoreResult.Success;
         }
 
         /// <summary>
@@ -186,15 +186,15 @@ namespace WazeBotDiscord.Keywords
         /// <param name="guildIds">Guild IDs that are being ignored</param>
         /// <returns>True if success, false if the user isn't subscribed to the provided keyword or 
         /// it is already being ignored</returns>
-        public async Task<bool> IgnoreGuildsAsync(ulong userId, string keyword, params ulong[] guildIds)
+        public async Task<IgnoreResult> IgnoreGuildsAsync(ulong userId, string keyword, params ulong[] guildIds)
         {
             keyword = keyword.ToLowerInvariant();
 
             var record = GetRecord(userId, keyword);
             if (record == null)
-                return false;
+                return IgnoreResult.NotSubscribed;
             if (guildIds.All(g => record.IgnoredGuilds.Contains(g)))
-                return false;
+                return IgnoreResult.AlreadyIgnored;
 
             var guilds = guildIds.Distinct().Except(record.IgnoredGuilds);
             var dbGuilds = guilds.Select(c => new DbKeywordIgnoredGuild
@@ -209,7 +209,7 @@ namespace WazeBotDiscord.Keywords
                     .Include(k => k.IgnoredGuilds)
                     .FirstOrDefaultAsync(k => k.Id == record.Id);
                 if (dbRecord == null)
-                    return false;
+                    return IgnoreResult.NotSubscribed;
 
                 foreach (var c in dbGuilds)
                     dbRecord.IgnoredGuilds.Add(c);
@@ -219,7 +219,7 @@ namespace WazeBotDiscord.Keywords
 
             record.IgnoredGuilds.AddRange(guilds);
 
-            return true;
+            return IgnoreResult.Success;
         }
 
         /// <summary>
@@ -229,13 +229,15 @@ namespace WazeBotDiscord.Keywords
         /// <param name="keyword">Keyword that is being unignored</param>
         /// <param name="channelIds">Channel IDs that are being unignored</param>
         /// <returns>True if success, false if the user isn't subscribed to the provided keyword</returns>
-        public async Task<bool> UnignoreChannelsAsync(ulong userId, string keyword, params ulong[] channelIds)
+        public async Task<UnignoreResult> UnignoreChannelsAsync(ulong userId, string keyword, params ulong[] channelIds)
         {
             keyword = keyword.ToLowerInvariant();
 
             var record = GetRecord(userId, keyword);
             if (record == null)
-                return false;
+                return UnignoreResult.NotSubscribed;
+            if (channelIds.All(c => !record.IgnoredGuilds.Contains(c)))
+                return UnignoreResult.NotIgnored;
 
             var channels = channelIds.Distinct().Intersect(record.IgnoredChannels);
 
@@ -245,7 +247,7 @@ namespace WazeBotDiscord.Keywords
                     .Include(k => k.IgnoredChannels)
                     .FirstOrDefaultAsync(k => k.Id == record.Id);
                 if (dbRecord == null)
-                    return false;
+                    return UnignoreResult.NotSubscribed;
 
                 foreach (var c in dbRecord.IgnoredChannels.Where(c => channels.Contains(c.ChannelId)).ToList())
                     dbRecord.IgnoredChannels.Remove(c);
@@ -255,7 +257,7 @@ namespace WazeBotDiscord.Keywords
 
             record.IgnoredChannels.RemoveAll(c => channels.Contains(c));
 
-            return true;
+            return UnignoreResult.Success;
         }
 
         /// <summary>
@@ -265,13 +267,15 @@ namespace WazeBotDiscord.Keywords
         /// <param name="keyword">Keyword that is being unignored</param>
         /// <param name="guildIds">Guild IDs that are being unignored</param>
         /// <returns>True if success, false if the user isn't subscribed to the provided keyword</returns>
-        public async Task<bool> UnignoreGuildsAsync(ulong userId, string keyword, params ulong[] guildIds)
+        public async Task<UnignoreResult> UnignoreGuildsAsync(ulong userId, string keyword, params ulong[] guildIds)
         {
             keyword = keyword.ToLowerInvariant();
 
             var record = GetRecord(userId, keyword);
             if (record == null)
-                return false;
+                return UnignoreResult.NotSubscribed;
+            if (guildIds.All(g => !record.IgnoredGuilds.Contains(g)))
+                return UnignoreResult.NotIgnored;
 
             var guilds = guildIds.Distinct().Intersect(record.IgnoredGuilds);
 
@@ -281,7 +285,7 @@ namespace WazeBotDiscord.Keywords
                     .Include(k => k.IgnoredGuilds)
                     .FirstOrDefaultAsync(k => k.Id == record.Id);
                 if (dbRecord == null)
-                    return false;
+                    return UnignoreResult.NotSubscribed;
 
                 foreach (var g in dbRecord.IgnoredGuilds.Where(g => guilds.Contains(g.GuildId)).ToList())
                     dbRecord.IgnoredGuilds.Remove(g);
@@ -291,7 +295,7 @@ namespace WazeBotDiscord.Keywords
 
             record.IgnoredGuilds.RemoveAll(g => guilds.Contains(g));
 
-            return true;
+            return UnignoreResult.Success;
         }
 
         /// <summary>
@@ -304,5 +308,19 @@ namespace WazeBotDiscord.Keywords
         {
             return _keywords.Find(k => k.UserId == userId && k.Keyword == keyword);
         }
+    }
+
+    public enum IgnoreResult
+    {
+        Success,
+        NotSubscribed,
+        AlreadyIgnored
+    }
+
+    public enum UnignoreResult
+    {
+        Success,
+        NotSubscribed,
+        NotIgnored
     }
 }
