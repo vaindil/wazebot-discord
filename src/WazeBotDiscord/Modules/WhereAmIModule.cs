@@ -9,8 +9,8 @@ namespace WazeBotDiscord.Modules
         [Command]
         public async Task WhereAmI([Remainder]string unused = null)
         {
-            await ReplyAsync($"Channel ID: `{Context.Channel.Id}`\n" +
-                             $"Server ID: `{Context.Guild.Id}`");
+            await ReplyAsync($"Channel ID: `{Context.Channel.Id.ToString()}`\n" +
+                             $"Server ID: `{Context.Guild.Id.ToString()}`");
         }
     }
 }

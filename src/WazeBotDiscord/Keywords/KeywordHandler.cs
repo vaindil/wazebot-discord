@@ -1,4 +1,5 @@
 ﻿using Discord.WebSocket;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace WazeBotDiscord.Keywords
@@ -10,11 +11,16 @@ namespace WazeBotDiscord.Keywords
             if (msg.Author.Id == client.CurrentUser.Id)
                 return;
 
+            var channel = msg.Channel as SocketTextChannel;
+
             foreach (var m in service.CheckForKeyword(msg.Content))
             {
+                if (!channel.Users.Any(u => u.Id == m.UserId))
+                    continue;
+
                 var dm = await client.GetUser(m.UserId).GetOrCreateDMChannelAsync();
                 await dm.SendMessageAsync($"{msg.Author.Mention} mentioned one or more of your keywords in " +
-                    $"{((SocketTextChannel)msg.Channel).Mention}.\n\n{msg.Content}");
+                    $"{((SocketTextChannel)msg.Channel).Mention}.\n\n```{msg.Content}```");
             }
         }
     }
