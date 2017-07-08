@@ -13,9 +13,10 @@ namespace WazeBotDiscord.Keywords
 
             var channel = msg.Channel as SocketTextChannel;
 
-            foreach (var m in service.CheckForKeyword(msg.Content))
+            foreach (var m in service.CheckForKeyword(msg.Content, channel.Guild.Id, channel.Id))
             {
-                if (!channel.Users.Any(u => u.Id == m.UserId))
+                if (/*msg.Author.Id == m.UserId
+                    ||*/ !channel.Users.Any(u => u.Id == m.UserId))
                     continue;
 
                 var dm = await client.GetUser(m.UserId).GetOrCreateDMChannelAsync();

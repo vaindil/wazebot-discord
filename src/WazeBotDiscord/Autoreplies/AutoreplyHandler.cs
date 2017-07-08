@@ -7,6 +7,9 @@ namespace WazeBotDiscord.Autoreplies
     {
         public static async Task HandleAutoreplyAsync(SocketMessage inMsg, AutoreplyService service)
         {
+            if (inMsg.Channel is SocketDMChannel)
+                return;
+
             var msg = (SocketUserMessage)inMsg;
             var content = msg.Content.ToLowerInvariant();
             var channel = (SocketTextChannel)msg.Channel;
