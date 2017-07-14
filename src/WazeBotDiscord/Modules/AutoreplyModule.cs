@@ -64,10 +64,12 @@ namespace WazeBotDiscord.Modules
         public class AddAutoreplyModule : ModuleBase
         {
             readonly AutoreplyService _arService;
+            readonly CommandService _cmdSvc;
 
-            public AddAutoreplyModule(AutoreplyService arService)
+            public AddAutoreplyModule(AutoreplyService arService, CommandService cmdSvc)
             {
                 _arService = arService;
+                _cmdSvc = cmdSvc;
             }
 
             [Command("channel")]
@@ -75,6 +77,12 @@ namespace WazeBotDiscord.Modules
             [RequireSmOrAbove]
             public async Task AddToChannel(string trigger, [Remainder]string reply)
             {
+                if (_cmdSvc.Search(Context, trigger).IsSuccess)
+                {
+                    await ReplyAsync("That trigger matches a bot command and cannot be used.");
+                    return;
+                }
+
                 if (trigger.Length > 30)
                 {
                     await ReplyAsync("Trigger is too long.");
@@ -108,6 +116,12 @@ namespace WazeBotDiscord.Modules
             [RequireSmOrAbove]
             public async Task AddToServer(string trigger, [Remainder]string reply)
             {
+                if (_cmdSvc.Search(Context, trigger).IsSuccess)
+                {
+                    await ReplyAsync("That trigger matches a bot command and cannot be used.");
+                    return;
+                }
+
                 if (trigger.Length > 30)
                 {
                     await ReplyAsync("Trigger is too long.");
@@ -141,6 +155,12 @@ namespace WazeBotDiscord.Modules
             [RequireChampInNationalGuild]
             public async Task AddToGlobal(string trigger, [Remainder]string reply)
             {
+                if (_cmdSvc.Search(Context, trigger).IsSuccess)
+                {
+                    await ReplyAsync("That trigger matches a bot command and cannot be used.");
+                    return;
+                }
+
                 if (trigger.Length > 30)
                 {
                     await ReplyAsync("Trigger is too long.");

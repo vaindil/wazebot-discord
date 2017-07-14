@@ -67,6 +67,7 @@ namespace WazeBotDiscord
             await lookupService.InitAsync();
 
             var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton(commands);
             serviceCollection.AddSingleton(autoreplyService);
             serviceCollection.AddSingleton(keywordService);
             serviceCollection.AddSingleton(lookupService);

@@ -5,7 +5,7 @@ namespace WazeBotDiscord.Autoreplies
 {
     public static class AutoreplyHandler
     {
-        public static async Task HandleAutoreplyAsync(SocketMessage inMsg, AutoreplyService service)
+        public static async Task HandleAutoreplyAsync(SocketMessage inMsg, AutoreplyService arService)
         {
             if (inMsg.Channel is SocketDMChannel)
                 return;
@@ -14,7 +14,7 @@ namespace WazeBotDiscord.Autoreplies
             var content = msg.Content.ToLowerInvariant();
             var channel = (SocketTextChannel)msg.Channel;
 
-            var ar = service.SearchForAutoreply(content, channel);
+            var ar = arService.SearchForAutoreply(content, channel);
             if (ar == null)
                 return;
 

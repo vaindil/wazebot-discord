@@ -27,14 +27,14 @@ namespace WazeBotDiscord.Autoreplies
         {
             var autoreplyList = BuildList(channel.Id, channel.Guild.Id);
 
-            return autoreplyList.FirstOrDefault(r => content.StartsWith($"!{r.Trigger}"));
+            return autoreplyList.Find(r => content.StartsWith($"!{r.Trigger}"));
         }
 
         public Autoreply GetExactAutoreply(ulong channelId, ulong guildId, string trigger)
         {
-            return _autoreplies.FirstOrDefault(r => r.ChannelId == channelId
-                                               && r.GuildId == guildId
-                                               && string.CompareOrdinal(r.Trigger, trigger) == 0);
+            return _autoreplies.Find(r => r.ChannelId == channelId
+                                          && r.GuildId == guildId
+                                          && string.CompareOrdinal(r.Trigger, trigger) == 0);
         }
 
         public async Task<bool> AddOrModifyAutoreply(Autoreply reply)
