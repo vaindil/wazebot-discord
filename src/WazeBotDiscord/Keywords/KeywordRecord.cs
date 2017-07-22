@@ -25,6 +25,20 @@ namespace WazeBotDiscord.Keywords
         public List<ulong> IgnoredGuilds { get; set; }
     }
 
+    public class UserMutedGuilds
+    {
+        public ulong UserId { get; set; }
+
+        public List<ulong> GuildIds { get; set; }
+    }
+
+    public class UserMutedChannels
+    {
+        public ulong UserId { get; set; }
+
+        public List<ulong> ChannelIds { get; set; }
+    }
+
     public class DbKeyword
     {
         public int Id { get; set; }
@@ -58,5 +72,19 @@ namespace WazeBotDiscord.Keywords
         public ulong GuildId { get; set; }
 
         public DbKeyword Keyword { get; set; }
+    }
+
+    public class DbUserMutedChannel
+    {
+        public ulong UserId { get; set; }
+
+        public ulong ChannelId { get; set; }
+    }
+
+    public class DbUserMutedGuild
+    {
+        public ulong UserId { get; set; }
+
+        public ulong GuildId { get; set; }
     }
 }

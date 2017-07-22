@@ -8,6 +8,8 @@ namespace WazeBotDiscord.Keywords
     public class KeywordService
     {
         List<KeywordRecord> _keywords;
+        List<UserMutedChannels> _mutedChannels;
+        List<UserMutedGuilds> _mutedGuilds;
 
         /// <summary>
         /// Initializes the keyword service from the database.
@@ -15,6 +17,8 @@ namespace WazeBotDiscord.Keywords
         public async Task InitKeywordServiceAsync()
         {
             List<DbKeyword> keywords;
+            List<DbUserMutedChannel> mutedChannels;
+            List<DbUserMutedGuild> mutedGuilds;
 
             using (var db = new WbContext())
             {
@@ -22,6 +26,9 @@ namespace WazeBotDiscord.Keywords
                     .Include(k => k.IgnoredChannels)
                     .Include(k => k.IgnoredGuilds)
                     .ToListAsync();
+
+                mutedChannels = await db.MutedChannels.ToListAsync();
+                mutedGuilds = await db.MutedGuilds.ToListAsync();
             }
 
             _keywords = keywords.Select(k => new KeywordRecord
@@ -31,6 +38,20 @@ namespace WazeBotDiscord.Keywords
                 Keyword = k.Keyword,
                 IgnoredChannels = k.IgnoredChannels.Select(c => c.ChannelId).ToList(),
                 IgnoredGuilds = k.IgnoredGuilds.Select(g => g.GuildId).ToList()
+            }).ToList();
+
+            var mcUserIds = mutedChannels.Select(c => c.UserId).Distinct();
+            _mutedChannels = mcUserIds.Select(i => new UserMutedChannels
+            {
+                UserId = i,
+                ChannelIds = mutedChannels.Where(c => c.UserId == i).Select(c => c.ChannelId).ToList()
+            }).ToList();
+
+            var mgUserIds = mutedGuilds.Select(g => g.UserId).Distinct();
+            _mutedGuilds = mgUserIds.Select(i => new UserMutedGuilds
+            {
+                UserId = i,
+                GuildIds = mutedGuilds.Where(g => g.UserId == i).Select(g => g.GuildId).ToList()
             }).ToList();
         }
 
@@ -51,6 +72,13 @@ namespace WazeBotDiscord.Keywords
                 if (!message.Contains(k.Keyword)
                     || k.IgnoredGuilds.Contains(guildId)
                     || k.IgnoredChannels.Contains(channelId))
+                    continue;
+
+                var mutedGuilds = _mutedGuilds.Find(g => g.UserId == k.UserId);
+                var mutedChannels = _mutedChannels.Find(c => c.UserId == k.UserId);
+
+                if ((mutedGuilds?.GuildIds.Contains(guildId) == true)
+                    || (mutedChannels?.ChannelIds.Contains(channelId) == true))
                     continue;
 
                 var existingMatch = matches.Find(m => m.UserId == k.UserId);
@@ -296,6 +324,124 @@ namespace WazeBotDiscord.Keywords
             record.IgnoredGuilds.RemoveAll(g => guilds.Contains(g));
 
             return UnignoreResult.Success;
+        }
+
+        /// <summary>
+        /// Mutes a channel for the given user.
+        /// </summary>
+        /// <param name="userId">User's ID</param>
+        /// <param name="channelId">Channel's ID</param>
+        public async Task MuteChannelAsync(ulong userId, ulong channelId)
+        {
+            var userRecord = _mutedChannels.Find(c => c.UserId == userId);
+            if (userRecord?.ChannelIds.Contains(channelId) == true)
+                return;
+
+            if (userRecord == null)
+                userRecord = new UserMutedChannels
+                {
+                    UserId = userId,
+                    ChannelIds = new List<ulong>()
+                };
+
+            userRecord.ChannelIds.Add(channelId);
+            _mutedChannels.Add(userRecord);
+
+            using (var db = new WbContext())
+            {
+                db.MutedChannels.Add(new DbUserMutedChannel
+                {
+                    UserId = userId,
+                    ChannelId = channelId
+                });
+
+                await db.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Mutes a guild for the given user.
+        /// </summary>
+        /// <param name="userId">User's ID</param>
+        /// <param name="guildId">Guild's ID</param>
+        public async Task MuteGuildAsync(ulong userId, ulong guildId)
+        {
+            var userRecord = _mutedGuilds.Find(c => c.UserId == userId);
+            if (userRecord?.GuildIds.Contains(guildId) == true)
+                return;
+
+            if (userRecord == null)
+                userRecord = new UserMutedGuilds
+                {
+                    UserId = userId,
+                    GuildIds = new List<ulong>()
+                };
+
+            userRecord.GuildIds.Add(guildId);
+            _mutedGuilds.Add(userRecord);
+
+            using (var db = new WbContext())
+            {
+                db.MutedGuilds.Add(new DbUserMutedGuild
+                {
+                    UserId = userId,
+                    GuildId = guildId
+                });
+
+                await db.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Unmutes a channel for the given user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="channelId"></param>
+        /// <returns></returns>
+        public async Task UnmuteChannelAsync(ulong userId, ulong channelId)
+        {
+            var userRecord = _mutedChannels.Find(c => c.UserId == userId);
+            if (userRecord == null || !userRecord.ChannelIds.Contains(channelId))
+                return;
+
+            userRecord.ChannelIds.Remove(channelId);
+
+            using (var db = new WbContext())
+            {
+                var record = await db.MutedChannels
+                    .FirstOrDefaultAsync(c => c.UserId == userId && c.ChannelId == channelId);
+                if (record == null)
+                    return;
+
+                db.MutedChannels.Remove(record);
+                await db.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Unmutes a guild for the given user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="guildId"></param>
+        /// <returns></returns>
+        public async Task UnmuteGuildAsync(ulong userId, ulong guildId)
+        {
+            var userRecord = _mutedGuilds.Find(c => c.UserId == userId);
+            if (userRecord == null || !userRecord.GuildIds.Contains(guildId))
+                return;
+
+            userRecord.GuildIds.Remove(guildId);
+
+            using (var db = new WbContext())
+            {
+                var record = await db.MutedGuilds
+                    .FirstOrDefaultAsync(c => c.UserId == userId && c.GuildId == guildId);
+                if (record == null)
+                    return;
+
+                db.MutedGuilds.Remove(record);
+                await db.SaveChangesAsync();
+            }
         }
 
         /// <summary>

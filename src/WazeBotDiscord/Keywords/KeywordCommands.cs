@@ -61,7 +61,7 @@ namespace WazeBotDiscord.Keywords
                 return;
             }
 
-            if (keyword.Length < 3)
+            if (keyword.Length < 2)
             {
                 await ReplyAsync($"{Context.Message.Author.Mention}: Your keyword must be at least 3 characters long.");
                 return;
@@ -270,6 +270,94 @@ namespace WazeBotDiscord.Keywords
                             "You're not subscribed to that keyword. No change made.");
                         break;
                 }
+            }
+        }
+
+        [Group("mute")]
+        [Alias("silence", "quiet")]
+        public class MuteKeywordsModule : ModuleBase
+        {
+            readonly KeywordService _kwdSvc;
+            readonly string _helpLink = "<https://wazeopedia.waze.com/wiki/USA/Wazebot#Keyword_Subscriptions>";
+
+            public MuteKeywordsModule(KeywordService kwdSvc)
+            {
+                _kwdSvc = kwdSvc;
+            }
+
+            [Command("server")]
+            [Alias("guild")]
+            public async Task MuteGuild(ulong guildId)
+            {
+                var guild = await Context.Client.GetGuildAsync(guildId);
+                if (guild == null)
+                {
+                    await ReplyAsync($"{Context.Message.Author.Mention}: " +
+                        $"That server ID is invalid. For more help, see {_helpLink}.");
+                    return;
+                }
+
+                await _kwdSvc.MuteGuildAsync(Context.Message.Author.Id, guildId);
+                await ReplyAsync($"{Context.Message.Author.Mention}: Muted {guild.Name}.");
+            }
+
+            [Command("channel")]
+            public async Task MuteChannel(ulong channelId)
+            {
+                var channel = await Context.Client.GetChannelAsync(channelId);
+                if (channel == null)
+                {
+                    await ReplyAsync($"{Context.Message.Author.Mention}: " +
+                        $"That channel ID is invalid. For more help, see {_helpLink}.");
+                    return;
+                }
+
+                await _kwdSvc.MuteChannelAsync(Context.Message.Author.Id, channelId);
+                await ReplyAsync($"{Context.Message.Author.Mention}: Muted {channel.Name}.");
+            }
+        }
+
+        [Group("unmute")]
+        [Alias("unsilence", "unquiet")]
+        public class UnmuteKeywordsModule : ModuleBase
+        {
+            readonly KeywordService _kwdSvc;
+            readonly string _helpLink = "<https://wazeopedia.waze.com/wiki/USA/Wazebot#Keyword_Subscriptions>";
+
+            public UnmuteKeywordsModule(KeywordService kwdSvc)
+            {
+                _kwdSvc = kwdSvc;
+            }
+
+            [Command("server")]
+            [Alias("guild")]
+            public async Task UnmuteGuild(ulong guildId)
+            {
+                var guild = await Context.Client.GetGuildAsync(guildId);
+                if (guild == null)
+                {
+                    await ReplyAsync($"{Context.Message.Author.Mention}: " +
+                        $"That server ID is invalid. For more help, see {_helpLink}.");
+                    return;
+                }
+
+                await _kwdSvc.UnmuteGuildAsync(Context.Message.Author.Id, guildId);
+                await ReplyAsync($"{Context.Message.Author.Mention}: Unmuted {guild.Name}.");
+            }
+
+            [Command("channel")]
+            public async Task UnmuteChannel(ulong channelId)
+            {
+                var channel = await Context.Client.GetChannelAsync(channelId);
+                if (channel == null)
+                {
+                    await ReplyAsync($"{Context.Message.Author.Mention}: " +
+                        $"That channel ID is invalid. For more help, see {_helpLink}.");
+                    return;
+                }
+
+                await _kwdSvc.UnmuteChannelAsync(Context.Message.Author.Id, channelId);
+                await ReplyAsync($"{Context.Message.Author.Mention}: Unmuted {channel.Name}.");
             }
         }
     }

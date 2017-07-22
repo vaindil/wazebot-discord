@@ -15,6 +15,8 @@ namespace WazeBotDiscord
         public DbSet<TwitterToCheck> TwittersToCheck { get; set; }
         public DbSet<SheetToSearch> SheetsToSearch { get; set; }
         public DbSet<DbKeyword> Keywords { get; set; }
+        public DbSet<DbUserMutedChannel> MutedChannels { get; set; }
+        public DbSet<DbUserMutedGuild> MutedGuilds { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -96,6 +98,24 @@ namespace WazeBotDiscord
 
                 e.Property(r => r.KeywordId).HasColumnName("keyword_id").IsRequired();
                 e.Property(r => r.GuildId).HasColumnName("guild_id").IsRequired();
+            });
+
+            modelBuilder.Entity<DbUserMutedChannel>(e =>
+            {
+                e.ToTable("keyword_user_muted_channel");
+                e.HasKey(c => new { c.UserId, c.ChannelId });
+
+                e.Property(c => c.UserId).HasColumnName("user_id");
+                e.Property(c => c.ChannelId).HasColumnName("channel_id");
+            });
+
+            modelBuilder.Entity<DbUserMutedGuild>(e =>
+            {
+                e.ToTable("keyword_user_muted_guild");
+                e.HasKey(g => new { g.UserId, g.GuildId });
+
+                e.Property(g => g.UserId).HasColumnName("user_id");
+                e.Property(g => g.GuildId).HasColumnName("guild_id");
             });
         }
     }
