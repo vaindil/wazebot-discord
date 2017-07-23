@@ -43,7 +43,7 @@ namespace WazeBotDiscord.Keywords
                 {
                     Id = k.Id,
                     UserId = k.UserId,
-                    Keyword = regexKeyword == null ? k.Keyword : null,
+                    Keyword = k.Keyword,
                     RegexKeyword = regexKeyword,
                     IgnoredChannels = k.IgnoredChannels.Select(c => c.ChannelId).ToList(),
                     IgnoredGuilds = k.IgnoredGuilds.Select(g => g.GuildId).ToList()
@@ -89,10 +89,12 @@ namespace WazeBotDiscord.Keywords
                     || (mutedChannels?.ChannelIds.Contains(channelId) == true))
                     continue;
 
-                if (k.Keyword != null && !message.Contains(k.Keyword))
-                    continue;
-
-                if (k.RegexKeyword?.IsMatch(message) == false)
+                if (k.RegexKeyword != null)
+                {
+                    if (k.RegexKeyword?.IsMatch(message) == false)
+                        continue;
+                }
+                else if (!message.Contains(k.Keyword))
                     continue;
 
                 var existingMatch = matches.Find(m => m.UserId == k.UserId);
@@ -130,7 +132,7 @@ namespace WazeBotDiscord.Keywords
                 return (record, true);
 
             if (keyword.StartsWith("/") && keyword.EndsWith("/"))
-                record = new KeywordRecord(userId, CreateRegex(keyword));
+                record = new KeywordRecord(userId, keyword, CreateRegex(keyword));
             else
                 record = new KeywordRecord(userId, keyword);
 

@@ -8,7 +8,7 @@ namespace WazeBotDiscord.Keywords
     {
         public static async Task HandleKeywordAsync(SocketMessage msg, KeywordService service, DiscordSocketClient client)
         {
-            if (msg.Author.Id == client.CurrentUser.Id)
+            if (msg.Author.Id == client.CurrentUser.Id || msg.Channel is SocketDMChannel)
                 return;
 
             var channel = msg.Channel as SocketTextChannel;

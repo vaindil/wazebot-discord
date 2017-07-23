@@ -7,19 +7,10 @@ namespace WazeBotDiscord.Keywords
     {
         public KeywordRecord() { }
 
-        public KeywordRecord(ulong userId, string keyword)
+        public KeywordRecord(ulong userId, string keyword, Regex regexKeyword = null)
         {
             UserId = userId;
             Keyword = keyword;
-            RegexKeyword = null;
-            IgnoredChannels = new List<ulong>();
-            IgnoredGuilds = new List<ulong>();
-        }
-
-        public KeywordRecord(ulong userId, Regex regexKeyword)
-        {
-            UserId = userId;
-            Keyword = null;
             RegexKeyword = regexKeyword;
             IgnoredChannels = new List<ulong>();
             IgnoredGuilds = new List<ulong>();
