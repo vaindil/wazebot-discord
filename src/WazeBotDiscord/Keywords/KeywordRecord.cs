@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace WazeBotDiscord.Keywords
 {
@@ -10,6 +11,16 @@ namespace WazeBotDiscord.Keywords
         {
             UserId = userId;
             Keyword = keyword;
+            RegexKeyword = null;
+            IgnoredChannels = new List<ulong>();
+            IgnoredGuilds = new List<ulong>();
+        }
+
+        public KeywordRecord(ulong userId, Regex regexKeyword)
+        {
+            UserId = userId;
+            Keyword = null;
+            RegexKeyword = regexKeyword;
             IgnoredChannels = new List<ulong>();
             IgnoredGuilds = new List<ulong>();
         }
@@ -19,6 +30,8 @@ namespace WazeBotDiscord.Keywords
         public ulong UserId { get; set; }
 
         public string Keyword { get; set; }
+
+        public Regex RegexKeyword { get; set; }
 
         public List<ulong> IgnoredChannels { get; set; }
 

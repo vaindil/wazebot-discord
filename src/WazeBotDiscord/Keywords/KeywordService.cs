@@ -1,15 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace WazeBotDiscord.Keywords
 {
     public class KeywordService
     {
-        List<KeywordRecord> _keywords;
-        List<UserMutedChannels> _mutedChannels;
-        List<UserMutedGuilds> _mutedGuilds;
+        List<KeywordRecord> _keywords = new List<KeywordRecord>();
+        List<UserMutedChannels> _mutedChannels = new List<UserMutedChannels>();
+        List<UserMutedGuilds> _mutedGuilds = new List<UserMutedGuilds>();
 
         /// <summary>
         /// Initializes the keyword service from the database.
@@ -31,14 +33,22 @@ namespace WazeBotDiscord.Keywords
                 mutedGuilds = await db.MutedGuilds.ToListAsync();
             }
 
-            _keywords = keywords.Select(k => new KeywordRecord
+            foreach (var k in keywords)
             {
-                Id = k.Id,
-                UserId = k.UserId,
-                Keyword = k.Keyword,
-                IgnoredChannels = k.IgnoredChannels.Select(c => c.ChannelId).ToList(),
-                IgnoredGuilds = k.IgnoredGuilds.Select(g => g.GuildId).ToList()
-            }).ToList();
+                Regex regexKeyword = null;
+                if (k.Keyword.StartsWith("/") && k.Keyword.EndsWith("/"))
+                    regexKeyword = CreateRegex(k.Keyword);
+
+                _keywords.Add(new KeywordRecord
+                {
+                    Id = k.Id,
+                    UserId = k.UserId,
+                    Keyword = regexKeyword == null ? k.Keyword : null,
+                    RegexKeyword = regexKeyword,
+                    IgnoredChannels = k.IgnoredChannels.Select(c => c.ChannelId).ToList(),
+                    IgnoredGuilds = k.IgnoredGuilds.Select(g => g.GuildId).ToList()
+                });
+            }
 
             var mcUserIds = mutedChannels.Select(c => c.UserId).Distinct();
             _mutedChannels = mcUserIds.Select(i => new UserMutedChannels
@@ -69,9 +79,7 @@ namespace WazeBotDiscord.Keywords
 
             foreach (var k in _keywords)
             {
-                if (!message.Contains(k.Keyword)
-                    || k.IgnoredGuilds.Contains(guildId)
-                    || k.IgnoredChannels.Contains(channelId))
+                if (k.IgnoredGuilds.Contains(guildId) || k.IgnoredChannels.Contains(channelId))
                     continue;
 
                 var mutedGuilds = _mutedGuilds.Find(g => g.UserId == k.UserId);
@@ -79,6 +87,12 @@ namespace WazeBotDiscord.Keywords
 
                 if ((mutedGuilds?.GuildIds.Contains(guildId) == true)
                     || (mutedChannels?.ChannelIds.Contains(channelId) == true))
+                    continue;
+
+                if (k.Keyword != null && !message.Contains(k.Keyword))
+                    continue;
+
+                if (k.RegexKeyword?.IsMatch(message) == false)
                     continue;
 
                 var existingMatch = matches.Find(m => m.UserId == k.UserId);
@@ -115,7 +129,10 @@ namespace WazeBotDiscord.Keywords
             if (record != null)
                 return (record, true);
 
-            record = new KeywordRecord(userId, keyword);
+            if (keyword.StartsWith("/") && keyword.EndsWith("/"))
+                record = new KeywordRecord(userId, CreateRegex(keyword));
+            else
+                record = new KeywordRecord(userId, keyword);
 
             _keywords.Add(record);
 
@@ -453,6 +470,14 @@ namespace WazeBotDiscord.Keywords
         KeywordRecord GetRecord(ulong userId, string keyword)
         {
             return _keywords.Find(k => k.UserId == userId && k.Keyword == keyword);
+        }
+
+        Regex CreateRegex(string keyword)
+        {
+            keyword = keyword.Trim('/');
+            return new Regex(keyword,
+                RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Multiline,
+                new TimeSpan(0, 0, 0, 0, 500));
         }
     }
 
