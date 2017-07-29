@@ -11,6 +11,7 @@ using WazeBotDiscord.Events;
 using WazeBotDiscord.Glossary;
 using WazeBotDiscord.Keywords;
 using WazeBotDiscord.Lookup;
+using WazeBotDiscord.MultiPermissionChannels;
 using WazeBotDiscord.Twitter;
 
 namespace WazeBotDiscord
@@ -66,12 +67,16 @@ namespace WazeBotDiscord
             var lookupService = new LookupService(httpClient);
             await lookupService.InitAsync();
 
+            var mpcService = new MultiPermissionChannelService();
+            await mpcService.InitAsync();
+
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton(commands);
             serviceCollection.AddSingleton(autoreplyService);
             serviceCollection.AddSingleton(keywordService);
             serviceCollection.AddSingleton(lookupService);
             serviceCollection.AddSingleton(glossaryService);
+            serviceCollection.AddSingleton(mpcService);
             serviceCollection.AddSingleton(httpClient);
 
             client.Ready += async () => await client.SetGameAsync("with junction boxes");
@@ -96,6 +101,9 @@ namespace WazeBotDiscord
                 await KeywordHandler.HandleKeywordAsync(msg, keywordService, client);
 
             client.UserJoined += async (SocketGuildUser user) => await UserJoinedRoleSyncEvent.SyncRoles(user, client);
+
+            client.GuildMemberUpdated += async (SocketGuildUser unused, SocketGuildUser user) =>
+                await UserRoleMpcEvent.GrantPermissionsAsync(user, client, mpcService);
 
             await InstallCommands();
 

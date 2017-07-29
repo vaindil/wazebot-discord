@@ -5,6 +5,7 @@ using System;
 using WazeBotDiscord.Autoreplies;
 using WazeBotDiscord.Keywords;
 using WazeBotDiscord.Lookup;
+using WazeBotDiscord.MultiPermissionChannels;
 using WazeBotDiscord.Twitter;
 
 namespace WazeBotDiscord
@@ -17,6 +18,7 @@ namespace WazeBotDiscord
         public DbSet<DbKeyword> Keywords { get; set; }
         public DbSet<DbUserMutedChannel> MutedChannels { get; set; }
         public DbSet<DbUserMutedGuild> MutedGuilds { get; set; }
+        public DbSet<DbMultiPermissionChannel> MultiPermissionChannels { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -116,6 +118,15 @@ namespace WazeBotDiscord
 
                 e.Property(g => g.UserId).HasColumnName("user_id");
                 e.Property(g => g.GuildId).HasColumnName("guild_id");
+            });
+
+            modelBuilder.Entity<DbMultiPermissionChannel>(e =>
+            {
+                e.ToTable("multi_permission_channel");
+                e.HasKey(c => new { c.ChannelId, c.RoleId });
+
+                e.Property(c => c.ChannelId).HasColumnName("channel_id");
+                e.Property(c => c.RoleId).HasColumnName("role_id");
             });
         }
     }
