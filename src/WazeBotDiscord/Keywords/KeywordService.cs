@@ -125,7 +125,8 @@ namespace WazeBotDiscord.Keywords
         /// <returns>Tuple of the keyword and whether user was already subscribed</returns>
         public async Task<(KeywordRecord Keyword, bool AlreadyExisted)> AddKeywordAsync(ulong userId, string keyword)
         {
-            keyword = keyword.ToLowerInvariant();
+            if (!keyword.StartsWith("/") || !keyword.EndsWith("/"))
+                keyword = keyword.ToLowerInvariant();
 
             var record = GetRecord(userId, keyword);
             if (record != null)
