@@ -137,18 +137,20 @@ namespace WazeBotDiscord.Keywords
             else
                 record = new KeywordRecord(userId, keyword);
 
-            _keywords.Add(record);
+            var dbKeyword = new DbKeyword
+            {
+                UserId = userId,
+                Keyword = keyword
+            };
 
             using (var db = new WbContext())
             {
-                db.Keywords.Add(new DbKeyword
-                {
-                    UserId = userId,
-                    Keyword = keyword
-                });
-
+                db.Keywords.Add(dbKeyword);
                 await db.SaveChangesAsync();
             }
+
+            record.Id = dbKeyword.Id;
+            _keywords.Add(record);
 
             return (record, false);
         }
@@ -161,7 +163,8 @@ namespace WazeBotDiscord.Keywords
         /// <returns>true if the keyword existed and was removed, or false if the user was not subscribed</returns>
         public async Task<bool> RemoveKeywordAsync(ulong userId, string keyword)
         {
-            keyword = keyword.ToLowerInvariant();
+            if (!keyword.StartsWith("/") || !keyword.EndsWith("/"))
+                keyword = keyword.ToLowerInvariant();
 
             var record = GetRecord(userId, keyword);
             if (record == null)
@@ -192,7 +195,8 @@ namespace WazeBotDiscord.Keywords
         /// it is already being ignored</returns>
         public async Task<IgnoreResult> IgnoreChannelsAsync(ulong userId, string keyword, params ulong[] channelIds)
         {
-            keyword = keyword.ToLowerInvariant();
+            if (!keyword.StartsWith("/") || !keyword.EndsWith("/"))
+                keyword = keyword.ToLowerInvariant();
 
             var record = GetRecord(userId, keyword);
             if (record == null)
@@ -236,7 +240,8 @@ namespace WazeBotDiscord.Keywords
         /// it is already being ignored</returns>
         public async Task<IgnoreResult> IgnoreGuildsAsync(ulong userId, string keyword, params ulong[] guildIds)
         {
-            keyword = keyword.ToLowerInvariant();
+            if (!keyword.StartsWith("/") || !keyword.EndsWith("/"))
+                keyword = keyword.ToLowerInvariant();
 
             var record = GetRecord(userId, keyword);
             if (record == null)
@@ -279,7 +284,8 @@ namespace WazeBotDiscord.Keywords
         /// <returns>True if success, false if the user isn't subscribed to the provided keyword</returns>
         public async Task<UnignoreResult> UnignoreChannelsAsync(ulong userId, string keyword, params ulong[] channelIds)
         {
-            keyword = keyword.ToLowerInvariant();
+            if (!keyword.StartsWith("/") || !keyword.EndsWith("/"))
+                keyword = keyword.ToLowerInvariant();
 
             var record = GetRecord(userId, keyword);
             if (record == null)
@@ -317,7 +323,8 @@ namespace WazeBotDiscord.Keywords
         /// <returns>True if success, false if the user isn't subscribed to the provided keyword</returns>
         public async Task<UnignoreResult> UnignoreGuildsAsync(ulong userId, string keyword, params ulong[] guildIds)
         {
-            keyword = keyword.ToLowerInvariant();
+            if (!keyword.StartsWith("/") || !keyword.EndsWith("/"))
+                keyword = keyword.ToLowerInvariant();
 
             var record = GetRecord(userId, keyword);
             if (record == null)

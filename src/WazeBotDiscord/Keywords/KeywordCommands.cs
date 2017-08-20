@@ -63,7 +63,7 @@ namespace WazeBotDiscord.Keywords
 
             if (keyword.Length < 2)
             {
-                await ReplyAsync($"{Context.Message.Author.Mention}: Your keyword must be at least 3 characters long.");
+                await ReplyAsync($"{Context.Message.Author.Mention}: Your keyword must be at least 2 characters long.");
                 return;
             }
 
