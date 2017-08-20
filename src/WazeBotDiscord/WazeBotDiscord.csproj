@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <CodeAnalysisRuleSet>WazeBotDiscord.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\WazeBotDiscord.ruleset</CodeAnalysisRuleSet>
     <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
 
