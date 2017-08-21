@@ -16,7 +16,8 @@ namespace WazeBotDiscord.Classes.Roles
             [313428729739083776] = 313429048275763201, // Southeast
             [300482201198395417] = 313425600046039051, // New England
             [300481818619150336] = 302528706042265602, // Northeast
-            [299676784327393281] = 299678085706547210  // Mid Atlantic, this is the AM role ID
+            [299676784327393281] = 299678085706547210, // Mid Atlantic, this is the AM role ID
+            [347386780074377217] = 347412734951817218  // Map Raid, this is the AM role ID
         };
     }
 }
