@@ -242,9 +242,16 @@ namespace WazeBotDiscord.Modules
 
         [Command("l3", RunMode = RunMode.Async)]
         [Alias("level3", "r3", "rank3")]
-        public async Task ToggleL3()
+        public async Task ToggleL3User()
         {
-            var user = Context.Message.Author;
+            await ToggleL3(Context.Message.Author);
+        }
+
+        [Command("l3", RunMode = RunMode.Async)]
+        [Alias("level3", "r3", "rank3")]
+        [RequireSmOrAbove]
+        public async Task ToggleL3(IUser user)
+        {
             var msg = await ReplyAsync($"{user.Mention}: Just a moment...");
 
             var result = await RoleSyncHelpers.ToggleSyncedRolesAsync(user, Level3.Ids, Context);
@@ -267,9 +274,16 @@ namespace WazeBotDiscord.Modules
 
         [Command("l2", RunMode = RunMode.Async)]
         [Alias("level2", "r2", "rank2")]
-        public async Task ToggleL2()
+        public async Task ToggleL2User()
         {
-            var user = Context.Message.Author;
+            await ToggleL2(Context.Message.Author);
+        }
+
+        [Command("l2", RunMode = RunMode.Async)]
+        [Alias("level2", "r2", "rank2")]
+        [RequireSmOrAbove]
+        public async Task ToggleL2(IUser user)
+        {
             var msg = await ReplyAsync($"{user.Mention}: Just a moment...");
 
             var result = await RoleSyncHelpers.ToggleSyncedRolesAsync(user, Level2.Ids, Context);
@@ -292,9 +306,16 @@ namespace WazeBotDiscord.Modules
 
         [Command("l1", RunMode = RunMode.Async)]
         [Alias("level1", "r1", "rank1")]
-        public async Task ToggleL1()
+        public async Task ToggleL1User()
         {
-            var user = Context.Message.Author;
+            await ToggleL1(Context.Message.Author);
+        }
+
+        [Command("l1", RunMode = RunMode.Async)]
+        [Alias("level1", "r1", "rank1")]
+        [RequireSmOrAbove]
+        public async Task ToggleL1(IUser user)
+        {
             var msg = await ReplyAsync($"{user.Mention}: Just a moment...");
 
             var result = await RoleSyncHelpers.ToggleSyncedRolesAsync(user, Level1.Ids, Context);
