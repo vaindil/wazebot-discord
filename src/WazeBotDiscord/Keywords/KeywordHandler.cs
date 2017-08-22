@@ -14,7 +14,7 @@ namespace WazeBotDiscord.Keywords
 
             var channel = msg.Channel as SocketTextChannel;
 
-            foreach (var m in service.CheckForKeyword(msg.Content, channel.Guild.Id, channel.Id))
+            foreach (var m in service.CheckForKeyword(msg, channel.Guild.Id, channel.Id))
             {
                 if (msg.Author.Id == m.UserId
                     || !channel.Users.Any(u => u.Id == m.UserId))

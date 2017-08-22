@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace WazeBotDiscord.Keywords
         List<KeywordRecord> _keywords = new List<KeywordRecord>();
         List<UserMutedChannels> _mutedChannels = new List<UserMutedChannels>();
         List<UserMutedGuilds> _mutedGuilds = new List<UserMutedGuilds>();
+
+        readonly Regex _botMsg = new Regex(@"\*\*.+\*\*: ");
 
         /// <summary>
         /// Initializes the keyword service from the database.
@@ -68,14 +71,17 @@ namespace WazeBotDiscord.Keywords
         /// <summary>
         /// Checks a message for any matching keywords and returns all matches.
         /// </summary>
-        /// <param name="message">The message to check</param>
+        /// <param name="msg">The message to check</param>
         /// <param name="guildId">ID of the guild the message was sent in</param>
         /// <param name="channelId">ID of the channel the message was sent in</param>
         /// <returns>List of matches</returns>
-        public List<KeywordMatch> CheckForKeyword(string message, ulong guildId, ulong channelId)
+        public List<KeywordMatch> CheckForKeyword(SocketMessage msg, ulong guildId, ulong channelId)
         {
-            message = message.ToLowerInvariant();
+            var message = msg.Content.ToLowerInvariant();
             var matches = new List<KeywordMatch>();
+
+            if (msg.Author.Id == 333960669839884290)
+                message = _botMsg.Replace(message, "");
 
             foreach (var k in _keywords)
             {
