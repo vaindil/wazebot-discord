@@ -6,7 +6,7 @@ namespace WazeBotDiscord.Classes.Roles
     {
         public static IReadOnlyDictionary<ulong, ulong> Ids = new Dictionary<ulong, ulong>
         {
-            // [] = ,National
+            [300471946494214146] = 300571435011670018, // National
             [313435914540154890] = 313436258846375936, // Northwest
             [301113669696356352] = 301417011848937483, // Southwest
             [313433524130545664] = 313433908400226305, // Plains
