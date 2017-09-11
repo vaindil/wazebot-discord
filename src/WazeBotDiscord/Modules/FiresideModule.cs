@@ -8,20 +8,20 @@ namespace WazeBotDiscord.Modules
 {
     public class FiresideModule : ModuleBase
     {
-        [Command("mifireside")]
+        //[Command("mifireside")]
         public async Task ToggleFireside(IUser user)
         {
             var author = (SocketGuildUser)Context.Message.Author;
 
             await Context.Message.DeleteAsync();
 
-            if (!author.Roles.Any(r => r.Id == 299566187791253504))
+            if (!author.Roles.Any(r => r.Id == 0))
                 return;
 
-            if (author.Hierarchy < Context.Guild.GetRole(299566441751904258).Position)
+            if (author.Hierarchy < Context.Guild.GetRole(0).Position)
                 return;
 
-            var channel = (SocketTextChannel)(await Context.Guild.GetChannelAsync(352541553543348224));
+            var channel = (SocketTextChannel)(await Context.Guild.GetChannelAsync(0));
             if (channel.GetPermissionOverwrite(user) != null)
                 await channel.RemovePermissionOverwriteAsync(user);
             else
