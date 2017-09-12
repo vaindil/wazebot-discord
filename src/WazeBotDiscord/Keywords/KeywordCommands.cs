@@ -39,16 +39,19 @@ namespace WazeBotDiscord.Keywords
             {
                 reply.Append("__");
                 reply.Append(Context.Message.Author.Mention);
-                reply.Append("'s Keywords__\n");
+                reply.Append("'s Keywords__\n```");
 
                 foreach (var k in keywords)
                 {
                     reply.Append(k.Keyword);
                     reply.Append("\n");
                 }
+
+                reply.Remove(reply.Length - 1, 1);
+                reply.Append("```");
             }
 
-            await ReplyAsync(reply.ToString().TrimEnd('\\', 'n'));
+            await ReplyAsync(reply.ToString());
         }
 
         [Command("add")]
