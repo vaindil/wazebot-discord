@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace WazeBotDiscord.Utilities
 {
@@ -8,7 +6,6 @@ namespace WazeBotDiscord.Utilities
     {
         public static IReadOnlyList<ulong> Ids = new List<ulong>
         {
-            299563059695976451, // GLR
             299676784327393281  // MAR
         };
     }
