@@ -132,7 +132,7 @@ namespace WazeBotDiscord
 
             var context = new CommandContext(client, message);
 
-            if (RestrictedRegion.Ids.Contains(context.Guild.Id))
+            if (!(message.Channel is SocketDMChannel) && RestrictedRegion.Ids.Contains(context.Guild.Id))
             {
                 await context.Channel.SendMessageAsync("The bot is currently disabled on this server. " +
                     "For more info, see here: <https://github.com/vaindil/wazebot-discord/issues/12>");
