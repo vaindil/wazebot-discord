@@ -1,7 +1,5 @@
 ﻿using Discord.WebSocket;
-using System.Linq;
 using System.Threading.Tasks;
-using WazeBotDiscord.Utilities;
 
 namespace WazeBotDiscord.Autoreplies
 {
@@ -19,13 +17,6 @@ namespace WazeBotDiscord.Autoreplies
             var ar = arService.SearchForAutoreply(content, channel);
             if (ar == null)
                 return;
-
-            if (RestrictedRegion.Ids.Contains(channel.Guild.Id))
-            {
-                await channel.SendMessageAsync("The bot is currently disabled on this server. " +
-                    "For more info, see here: <https://github.com/vaindil/wazebot-discord/issues/12>");
-                return;
-            }
 
             await channel.SendMessageAsync(ar.Reply);
         }

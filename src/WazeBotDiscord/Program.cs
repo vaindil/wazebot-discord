@@ -3,7 +3,6 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -13,7 +12,6 @@ using WazeBotDiscord.Glossary;
 using WazeBotDiscord.Keywords;
 using WazeBotDiscord.Lookup;
 using WazeBotDiscord.Twitter;
-using WazeBotDiscord.Utilities;
 
 namespace WazeBotDiscord
 {
@@ -131,14 +129,6 @@ namespace WazeBotDiscord
                 return;
 
             var context = new CommandContext(client, message);
-
-            if (!(message.Channel is SocketDMChannel) && RestrictedRegion.Ids.Contains(context.Guild.Id))
-            {
-                await context.Channel.SendMessageAsync("The bot is currently disabled on this server. " +
-                    "For more info, see here: <https://github.com/vaindil/wazebot-discord/issues/12>");
-                return;
-            }
-
             var result = await commands.ExecuteAsync(context, argPos, services);
             if (!result.IsSuccess && result.Error == CommandError.UnmetPrecondition)
             {
