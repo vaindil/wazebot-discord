@@ -131,14 +131,15 @@ namespace WazeBotDiscord.Keywords
         /// <returns>Tuple of the keyword and whether user was already subscribed</returns>
         public async Task<(KeywordRecord Keyword, bool AlreadyExisted)> AddKeywordAsync(ulong userId, string keyword)
         {
-            if (!IsKeywordRegex(keyword))
+            var isKeywordRegex = IsKeywordRegex(keyword);
+            if (!isKeywordRegex)
                 keyword = keyword.ToLowerInvariant();
 
             var record = GetRecord(userId, keyword);
             if (record != null)
                 return (record, true);
 
-            if (IsKeywordRegex(keyword))
+            if (isKeywordRegex)
                 record = new KeywordRecord(userId, keyword, CreateRegex(keyword));
             else
                 record = new KeywordRecord(userId, keyword);
@@ -488,22 +489,24 @@ namespace WazeBotDiscord.Keywords
             return _keywords.Find(k => k.UserId == userId && k.Keyword == keyword);
         }
 
-
         /// <summary>
         /// Indicates if regex is being used for keyword
         /// </summary>
         /// <param name="keyword">The keyword for the record</param>
         /// <returns>Boolean of if it's a regex format or not</returns>
-        bool IsKeywordRegex(string keyword) {
-            return (keyword.StartsWith("/") && (keyword.EndsWith("/") || keyword.EndsWith("/s")));
+        bool IsKeywordRegex(string keyword)
+        {
+            return keyword.StartsWith("/") && (keyword.EndsWith("/") || keyword.EndsWith("/s"));
         }
 
         Regex CreateRegex(string keyword)
         {
-            RegexOptions options = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Multiline;
-            if (keyword.EndsWith("/s")){
+            var options = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Multiline;
+            if (keyword.EndsWith("/s"))
+            {
                 keyword = keyword.Substring(1, keyword.Length - 3);
-            } else {
+            } else
+            {
                 options |= RegexOptions.IgnoreCase;
                 keyword = keyword.Trim('/');
             }
