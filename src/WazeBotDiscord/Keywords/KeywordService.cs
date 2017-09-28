@@ -77,11 +77,14 @@ namespace WazeBotDiscord.Keywords
         /// <returns>List of matches</returns>
         public List<KeywordMatch> CheckForKeyword(SocketMessage msg, ulong guildId, ulong channelId)
         {
-            var message = msg.Content.ToLowerInvariant();
-            var matches = new List<KeywordMatch>();
+            var message = msg.Content;
 
+            // prevents names from triggering keywords in the GHO sync bot messages
             if (msg.Author.Id == 333960669839884290)
                 message = _botMsg.Replace(message, "");
+
+            var lowercaseMessage = message.ToLowerInvariant();
+            var matches = new List<KeywordMatch>();
 
             foreach (var k in _keywords)
             {
@@ -100,8 +103,10 @@ namespace WazeBotDiscord.Keywords
                     if (k.RegexKeyword?.IsMatch(message) == false)
                         continue;
                 }
-                else if (!message.Contains(k.Keyword))
+                else if (!lowercaseMessage.Contains(k.Keyword))
+                {
                     continue;
+                }
 
                 var existingMatch = matches.Find(m => m.UserId == k.UserId);
                 if (existingMatch != null)
