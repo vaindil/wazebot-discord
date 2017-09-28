@@ -505,7 +505,8 @@ namespace WazeBotDiscord.Keywords
             if (keyword.EndsWith("/s"))
             {
                 keyword = keyword.Substring(1, keyword.Length - 3);
-            } else
+            }
+            else
             {
                 options |= RegexOptions.IgnoreCase;
                 keyword = keyword.Trim('/');
