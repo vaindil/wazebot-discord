@@ -501,19 +501,19 @@ namespace WazeBotDiscord.Keywords
         /// <returns>Boolean of if it's a regex format or not</returns>
         bool IsKeywordRegex(string keyword)
         {
-            return keyword.StartsWith("/") && (keyword.EndsWith("/") || keyword.EndsWith("/s"));
+            return keyword.StartsWith("/") && (keyword.EndsWith("/") || keyword.EndsWith("/i"));
         }
 
         Regex CreateRegex(string keyword)
         {
             var options = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Multiline;
-            if (keyword.EndsWith("/s"))
+            if (keyword.EndsWith("/i"))
             {
+                options |= RegexOptions.IgnoreCase;
                 keyword = keyword.Substring(1, keyword.Length - 3);
             }
             else
             {
-                options |= RegexOptions.IgnoreCase;
                 keyword = keyword.Trim('/');
             }
 
