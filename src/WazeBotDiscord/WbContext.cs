@@ -65,7 +65,7 @@ namespace WazeBotDiscord
 
             modelBuilder.Entity<DbKeyword>(e =>
             {
-                e.ToTable("keyword");
+                e.ToTable("keyword_record");
                 e.HasKey(r => r.Id);
 
                 e.Property(r => r.UserId).HasColumnName("user_id").IsRequired();
