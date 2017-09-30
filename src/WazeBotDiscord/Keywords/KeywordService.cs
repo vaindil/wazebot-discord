@@ -501,7 +501,7 @@ namespace WazeBotDiscord.Keywords
         /// <returns>Boolean of if it's a regex format or not</returns>
         bool IsKeywordRegex(string keyword)
         {
-            return keyword.StartsWith("/") && (keyword.EndsWith("/") || keyword.EndsWith("/i"));
+            return keyword.StartsWith('/') && (keyword.EndsWith('/') || keyword.EndsWith("/i"));
         }
 
         Regex CreateRegex(string keyword)
