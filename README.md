@@ -1,0 +1,1 @@
+This repository is no longer in use, the Waze community decided to fork it [here](https://gitlab.com/SixbucksSolutions/CommunityBot). (By fork I mean "clone it and delete the history", but that's just semantics.)
