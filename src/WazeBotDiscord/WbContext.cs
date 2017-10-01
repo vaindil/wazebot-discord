@@ -69,7 +69,7 @@ namespace WazeBotDiscord
                 e.HasKey(r => r.Id);
 
                 e.Property(r => r.UserId).HasColumnName("user_id").IsRequired();
-                e.Property(r => r.Keyword).HasColumnName("keyword").IsRequired().HasMaxLength(30);
+                e.Property(r => r.Keyword).HasColumnName("keyword").IsRequired().HasMaxLength(60);
 
                 e.HasMany(r => r.IgnoredChannels)
                     .WithOne(s => s.Keyword)
